@@ -23,13 +23,8 @@ import {
 const STEPS = 5;
 
 function reachGoal(goal: string, params?: Record<string, unknown>) {
-  const w = window as unknown as Record<string, unknown>;
-  const el = document.querySelector<HTMLElement>('[data-metrika-id]');
-  const id = el?.dataset.metrikaId;
-  if (!id) return;
-  const counter = w[`yaCounter${id}`] as { reachGoal?: Function } | undefined;
-  if (counter?.reachGoal) counter.reachGoal(goal, params);
-  else if (typeof w.ym === 'function') (w.ym as Function)(Number(id), 'reachGoal', goal, params);
+  // Analytics disabled — no-op
+  return;
 }
 
 const money = (n: number) => Math.round(n).toLocaleString('ru-RU');

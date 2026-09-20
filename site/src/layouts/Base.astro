@@ -80,7 +80,7 @@ const org = {
     <meta property="og:locale" content="ru_RU" />
 
     <meta name="theme-color" content="#ffffff" />
-    <meta name="yandex-verification" content={site.yandexVerification} />
+    {site.yandexVerification && <meta name="yandex-verification" content={site.yandexVerification} />}
 
     <link rel="icon" href="/hcln/favicon.svg" type="image/svg+xml" />
     <link

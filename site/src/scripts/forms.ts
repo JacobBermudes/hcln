@@ -103,11 +103,8 @@ function validate(form: HTMLFormElement): boolean {
 
 /* --- Цели Метрики -------------------------------------------------------- */
 function reachGoal(goal: string, params?: Record<string, unknown>) {
-  const w = window as unknown as Record<string, unknown>;
-  const id = (document.querySelector('[data-metrika-id]') as HTMLElement | null)?.dataset.metrikaId;
-  const fn = id ? (w[`yaCounter${id}`] as { reachGoal?: Function } | undefined) : undefined;
-  if (fn?.reachGoal) fn.reachGoal(goal, params);
-  else if (typeof w.ym === 'function' && id) (w.ym as Function)(Number(id), 'reachGoal', goal, params);
+  // Analytics disabled — no-op to avoid calling external counters
+  return;
 }
 
 /* --- Отправка ------------------------------------------------------------ */

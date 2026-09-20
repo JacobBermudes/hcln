@@ -23,8 +23,9 @@ export const site = {
   email: 'info@hcln.ru', // УТОЧНИТЬ: почты нет в базе знаний
   hours: 'Ежедневно 09:00–19:00',
 
-  metrikaId: '88211131',
-  yandexVerification: 'b775cf8fd3839e0b',
+  // analytics disabled by default for deployed copy
+  metrikaId: '',
+  yandexVerification: '',
 } as const;
 
 /* --------------------------------------------------------------------------
