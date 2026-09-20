@@ -13,7 +13,7 @@ export const site = {
   city: 'Екатеринбург',
   cityIn: 'в Екатеринбурге',
   region: 'Свердловская область',
-  domain: 'https://hcln.ru',
+  domain: 'https://jacobBermudes.github.io',
 
   phone: '+7 (343) 346-79-53',
   phoneHref: 'tel:+73433467953',
@@ -68,34 +68,34 @@ export const heroBadges = [
 ] as const;
 
 export const nav = [
-  { label: 'Услуги', href: '/uslugi/', mega: true },
-  { label: 'Цены', href: '/ceny/' },
-  { label: 'Кейсы', href: '/kejsy/' },
-  { label: 'О компании', href: '/o-kompanii/' },
-  { label: 'Документы', href: '/dokumenty/' },
-  { label: 'Контакты', href: '/kontakty/' },
+  { label: 'Услуги', href: '/hcln/uslugi/', mega: true },
+  { label: 'Цены', href: '/hcln/ceny/' },
+  { label: 'Кейсы', href: '/hcln/kejsy/' },
+  { label: 'О компании', href: '/hcln/o-kompanii/' },
+  { label: 'Документы', href: '/hcln/dokumenty/' },
+  { label: 'Контакты', href: '/hcln/kontakty/' },
 ] as const;
 
 export const footerNav = [
   {
     title: 'Компания',
     links: [
-      { label: 'О компании', href: '/o-kompanii/' },
-      { label: 'Кейсы', href: '/kejsy/' },
-      { label: 'Наши работы', href: '/nashi-raboty/' },
-      { label: 'Отзывы', href: '/otzyvy/' },
-      { label: 'Документы', href: '/dokumenty/' },
-      { label: 'Контакты', href: '/kontakty/' },
+      { label: 'О компании', href: '/hcln/o-kompanii/' },
+      { label: 'Кейсы', href: '/hcln/kejsy/' },
+      { label: 'Наши работы', href: '/hcln/nashi-raboty/' },
+      { label: 'Отзывы', href: '/hcln/otzyvy/' },
+      { label: 'Документы', href: '/hcln/dokumenty/' },
+      { label: 'Контакты', href: '/hcln/kontakty/' },
     ],
   },
   {
     title: 'Клиентам',
     links: [
-      { label: 'Цены и тарифы', href: '/ceny/' },
-      { label: 'Рассчитать стоимость', href: '/#kalkulyator' },
-      { label: 'Частые вопросы', href: '/#faq' },
-      { label: 'Блог', href: '/blog/' },
-      { label: 'Вакансии', href: '/vakansii/' },
+      { label: 'Цены и тарифы', href: '/hcln/ceny/' },
+      { label: 'Рассчитать стоимость', href: '/hcln/#kalkulyator' },
+      { label: 'Частые вопросы', href: '/hcln/#faq' },
+      { label: 'Блог', href: '/hcln/blog/' },
+      { label: 'Вакансии', href: '/hcln/vakansii/' },
     ],
   },
 ] as const;

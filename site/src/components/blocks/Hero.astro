@@ -15,7 +15,7 @@ import Icon from '../ui/Icon.astro';
  * на главной шапка идёт в прозрачном режиме и лежит поверх снимка.
  */
 const WIDTHS = [800, 1200, 1600, 2000];
-const srcset = (n: string, ws: number[]) => ws.map((w) => `/img/${n}-${w}.webp ${w}w`).join(', ');
+const srcset = (n: string, ws: number[]) => ws.map((w) => `/hcln/img/${n}-${w}.webp ${w}w`).join(', ');
 ---
 
 <section class="hero" aria-labelledby="hero-title">
@@ -27,7 +27,7 @@ const srcset = (n: string, ws: number[]) => ws.map((w) => `/img/${n}-${w}.webp $
         sizes="100vw"
       />
       <img
-        src="/img/hero-van-1600.webp"
+        src="/hcln/img/hero-van-1600.webp"
         srcset={srcset('hero-van', WIDTHS)}
         sizes="100vw"
         width="1600"

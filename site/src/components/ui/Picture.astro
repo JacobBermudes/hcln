@@ -36,14 +36,14 @@ const RATIO: Record<string, number> = {
 };
 
 const r = RATIO[ratio];
-const srcset = WIDTHS.map((w) => `/img/${name}-${w}.webp ${w}w`).join(', ');
+const srcset = WIDTHS.map((w) => `/hcln/img/${name}-${w}.webp ${w}w`).join(', ');
 const fallbackW = 800;
 const fallbackH = Math.round(fallbackW / r);
 ---
 
 <div class:list={['media', `media--${ratio}`, zoom && 'media--zoom', cls]} {...rest}>
   <img
-    src={`/img/${name}-${fallbackW}.webp`}
+    src={`/hcln/img/${name}-${fallbackW}.webp`}
     srcset={srcset}
     sizes={sizes}
     width={fallbackW}

@@ -10,7 +10,7 @@ import Button from '../ui/Button.astro';
  * Шторка с перетаскиванием, а не две картинки рядом: мышь, тач и стрелки.
  */
 const WIDTHS = [480, 800, 1200, 1600];
-const srcset = (n: string) => WIDTHS.map((w) => `/img/${n}-${w}.webp ${w}w`).join(', ');
+const srcset = (n: string) => WIDTHS.map((w) => `/hcln/img/${n}-${w}.webp ${w}w`).join(', ');
 ---
 
 <Section labelledby="ba-title">
@@ -35,7 +35,7 @@ const srcset = (n: string) => WIDTHS.map((w) => `/img/${n}-${w}.webp ${w}w`).joi
         >
           <img
             class="ba__img ba__img--after"
-            src={`/img/${pair.after}-800.webp`}
+            src={`/hcln/img/${pair.after}-800.webp`}
             srcset={srcset(pair.after)}
             sizes="(max-width: 900px) 100vw, 33vw"
             width="800"
@@ -48,7 +48,7 @@ const srcset = (n: string) => WIDTHS.map((w) => `/img/${n}-${w}.webp ${w}w`).joi
           <div class="ba__clip" data-ba-clip>
             <img
               class="ba__img ba__img--before"
-              src={`/img/${pair.before}-800.webp`}
+              src={`/hcln/img/${pair.before}-800.webp`}
               srcset={srcset(pair.before)}
               sizes="(max-width: 900px) 100vw, 33vw"
               width="800"

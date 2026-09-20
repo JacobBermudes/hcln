@@ -88,7 +88,7 @@ export const cases = [
   {
     slug: 'brusnika',
     photo: 'case-renovation',
-    logo: { file: '/img/logos/brusnika.svg', name: 'Брусника', vector: true },
+    logo: { file: '/hcln/img/logos/brusnika.svg', name: 'Брусника', vector: true },
     segment: 'Застройщик',
     type: 'Офисы продаж и сданные объекты',
     area: '{{площадь}} м²',
@@ -101,7 +101,7 @@ export const cases = [
   {
     slug: 'dinamo',
     photo: 'work-facade',
-    logo: { file: '/img/logos/dinamo.webp', name: 'Динамо', vector: false },
+    logo: { file: '/hcln/img/logos/dinamo.webp', name: 'Динамо', vector: false },
     segment: 'Спортивный комплекс',
     type: 'Залы, раздевалки, влажные зоны',
     area: '{{площадь}} м²',
@@ -114,7 +114,7 @@ export const cases = [
   {
     slug: 'klassiki',
     photo: 'seg-office',
-    logo: { file: '/img/logos/klassiki.webp', name: 'Классики', vector: false },
+    logo: { file: '/hcln/img/logos/klassiki.webp', name: 'Классики', vector: false },
     segment: 'Городская школа',
     type: 'Учебные классы, рекреации, пищеблок',
     area: '{{площадь}} м²',
@@ -335,7 +335,7 @@ export const priceFactors = [
    согласий наберётся 8–12 (OPEN-QUESTIONS.md, вопрос 6.2), включаем
    отдельную сетку. */
 export const clientLogos = [
-  { file: '/img/logos/brusnika.svg', name: 'Брусника', vector: true, width: 150 },
-  { file: '/img/logos/dinamo.webp', name: 'Динамо', vector: false, width: 130 },
-  { file: '/img/logos/klassiki.webp', name: 'Классики', vector: false, width: 120 },
+  { file: '/hcln/img/logos/brusnika.svg', name: 'Брусника', vector: true, width: 150 },
+  { file: '/hcln/img/logos/dinamo.webp', name: 'Динамо', vector: false, width: 130 },
+  { file: '/hcln/img/logos/klassiki.webp', name: 'Классики', vector: false, width: 120 },
 ] as const;
