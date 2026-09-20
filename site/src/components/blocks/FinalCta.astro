@@ -1,0 +1,161 @@
+---
+import { site } from '../../data/site';
+import LeadForm from '../forms/LeadForm.astro';
+import Icon from '../ui/Icon.astro';
+import Squiggle from '../ui/Squiggle.astro';
+
+/**
+ * Блок 16 из doc 03. Оффер здесь ДРУГОЙ, чем на первом экране:
+ * не «рассчитать», а «бесплатный выезд специалиста на объект».
+ */
+---
+
+<section class="cta section" aria-labelledby="cta-title">
+  <div class="container">
+    <div class="cta__panel">
+      <Squiggle color="blue" width={300} class="cta__squiggle" />
+
+      <div class="cta__text">
+        <p class="eyebrow">Бесплатно и без обязательств</p>
+        <h2 class="cta__title" id="cta-title">Приедем на объект и посчитаем — бесплатно</h2>
+        <p class="cta__lead">
+          Специалист осмотрит помещение, оценит объём и сложность и подготовит расчёт
+          с фиксированной ставкой. Выезд в день обращения.
+        </p>
+
+        <ul class="cta__contacts">
+          <li>
+            <a href={site.phoneHref}>
+              <span class="cta__ico"><Icon name="phone" size={20} /></span>
+              <span>
+                <b>{site.phone}</b>
+                <i>{site.hours}</i>
+              </span>
+            </a>
+          </li>
+          <li>
+            <a href={site.telegram} target="_blank" rel="noopener">
+              <span class="cta__ico"><Icon name="telegram" size={20} /></span>
+              <span>
+                <b>Telegram</b>
+                <i>{site.mobile}</i>
+              </span>
+            </a>
+          </li>
+          <li>
+            <a href={site.whatsapp} target="_blank" rel="noopener">
+              <span class="cta__ico"><Icon name="whatsapp" size={20} /></span>
+              <span>
+                <b>WhatsApp</b>
+                <i>{site.mobile}</i>
+              </span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="cta__form">
+        <LeadForm
+          id="final"
+          formName="Вызвать специалиста на объект"
+          submitLabel="Вызвать специалиста на объект"
+          withArea
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta__panel {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1.5rem, 0.8rem + 3vw, 3.5rem);
+    padding: clamp(1.5rem, 0.7rem + 3.2vw, 3.5rem);
+    border-radius: var(--r-2xl);
+    background: var(--blue-soft);
+  }
+
+  .cta__squiggle {
+    left: 42%;
+    bottom: -90px;
+    opacity: 0.13;
+  }
+
+  .cta__text {
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta__title {
+    margin-top: var(--sp-3);
+  }
+
+  .cta__lead {
+    max-width: 44ch;
+    margin-top: var(--sp-4);
+    color: var(--ink-muted);
+  }
+
+  .cta__contacts {
+    display: grid;
+    gap: var(--sp-3);
+    margin-top: var(--sp-6);
+  }
+
+  .cta__contacts a {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3);
+    border-radius: var(--r-md);
+    transition: background-color var(--dur-hover) var(--ease-out);
+  }
+
+  .cta__contacts a:hover {
+    background: rgb(255 255 255 / 0.6);
+  }
+
+  .cta__ico {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--white);
+    color: var(--blue-deep);
+  }
+
+  .cta__contacts b {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--fs-h4);
+  }
+
+  .cta__contacts i {
+    display: block;
+    font-style: normal;
+    font-size: var(--fs-caption);
+    color: var(--ink-soft);
+  }
+
+  /* Форма на белой карточке — чтобы поля читались на голубой панели */
+  .cta__form {
+    position: relative;
+    z-index: 1;
+    align-self: start;
+    padding: clamp(1.25rem, 0.8rem + 1.8vw, 2rem);
+    border-radius: var(--r-xl);
+    background: var(--white);
+    box-shadow: var(--shadow-md);
+  }
+
+  @media (max-width: 900px) {
+    .cta__panel {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,202 @@
+---
+import { cases } from '../../data/content';
+import Section from '../ui/Section.astro';
+import SectionHead from '../ui/SectionHead.astro';
+import Picture from '../ui/Picture.astro';
+import Icon from '../ui/Icon.astro';
+import Button from '../ui/Button.astro';
+
+/**
+ * Блок 7 из doc 03 — самый недостающий блок на текущем сайте.
+ * «Кейс без цифр — не кейс.»
+ *
+ * Логотипы и названия клиентов реальные (папка /case). Площади, сроки и
+ * результаты помечены как {{...}} — их нужно подставить до публикации,
+ * см. комментарий в src/data/content.ts.
+ */
+---
+
+<Section id="kejsy" labelledby="cases-title">
+  <SectionHead
+    eyebrow="Нам доверяют"
+    title="Объекты, которые мы обслуживаем"
+    highlight="которые мы обслуживаем"
+    sub="Застройщик, спортивный комплекс и городская школа — три разных санитарных режима и три разных графика."
+    id="cases-title"
+  >
+    <Button href="/kejsy/" variant="ghost" size="sm">Все кейсы</Button>
+  </SectionHead>
+
+  <ul class="cases" data-reveal>
+    {cases.map((c) => (
+      <li class="case" data-reveal-item>
+        <a class="case__link" href={`/kejsy/${c.slug}/`}>
+          <Picture
+            name={c.photo}
+            alt={`${c.segment}: ${c.type}`}
+            ratio="4-3"
+            sizes="(max-width: 900px) 100vw, 33vw"
+            class="case__photo"
+          >
+            <span class="media__cap">
+              <span class="chip">{c.segment}</span>
+              <span class="chip">{c.area}</span>
+            </span>
+          </Picture>
+
+          <div class="case__body">
+            <div class="case__logo">
+              <img
+                src={c.logo.file}
+                alt={`Логотип «${c.logo.name}»`}
+                width="150"
+                height="44"
+                loading="lazy"
+              />
+            </div>
+
+            <h3 class="case__title">{c.type}</h3>
+
+            <dl class="case__meta">
+              <dt>Задача</dt>
+              <dd>{c.task}</dd>
+              <dt>Что сделали</dt>
+              <dd>{c.done}</dd>
+            </dl>
+
+            <ul class="case__results">
+              {c.results.map((r) => (
+                <li>
+                  <Icon name="check" size={16} />
+                  {r}
+                </li>
+              ))}
+            </ul>
+
+            <span class="link-arrow case__more">
+              Смотреть кейс
+              <Icon name="arrow" size={16} />
+            </span>
+          </div>
+        </a>
+      </li>
+    ))}
+  </ul>
+</Section>
+
+<style>
+  .cases {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-5);
+  }
+
+  .case__link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    background: var(--white);
+    transition:
+      transform var(--dur-hover) var(--ease-out),
+      border-color var(--dur-hover) var(--ease-out),
+      box-shadow var(--dur-hover) var(--ease-out);
+  }
+
+  .case__link:hover {
+    transform: translateY(-2px);
+    border-color: var(--blue);
+    box-shadow: var(--shadow-md);
+  }
+
+  .case__photo {
+    border-radius: 0;
+  }
+
+  .case__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: var(--sp-5);
+  }
+
+  /* Логотип клиента приглушён, чтобы не спорить с текстом кейса */
+  .case__logo {
+    display: flex;
+    align-items: center;
+    height: 44px;
+    margin-bottom: var(--sp-4);
+  }
+
+  /* Логотипы оставляем цветными: у «Классиков» знак свёрстан белым по
+     плашке, в оттенках серого он превращается в нечитаемый прямоугольник. */
+  .case__logo img {
+    max-height: 100%;
+    width: auto;
+    object-fit: contain;
+    object-position: left center;
+    opacity: 0.86;
+    transition: opacity var(--dur-hover) var(--ease-out);
+  }
+
+  .case__link:hover .case__logo img {
+    opacity: 1;
+  }
+
+  .case__title {
+    font-size: var(--fs-h4);
+  }
+
+  .case__meta {
+    margin-top: var(--sp-4);
+    font-size: var(--fs-caption);
+  }
+
+  .case__meta dt {
+    font-weight: 700;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    font-size: 0.6875rem;
+    color: var(--ink-soft);
+  }
+
+  .case__meta dd {
+    margin: var(--sp-1) 0 var(--sp-3);
+    color: var(--ink-muted);
+  }
+
+  .case__results {
+    display: grid;
+    gap: var(--sp-2);
+    margin-top: auto;
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--line);
+    font-size: var(--fs-caption);
+    font-weight: 600;
+  }
+
+  .case__results li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-2);
+  }
+
+  .case__results svg {
+    flex: none;
+    margin-top: 3px;
+    color: var(--ok);
+  }
+
+  .case__more {
+    margin-top: var(--sp-5);
+    font-size: var(--fs-caption);
+  }
+
+  @media (max-width: 900px) {
+    .cases {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

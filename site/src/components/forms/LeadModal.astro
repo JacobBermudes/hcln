@@ -1,0 +1,33 @@
+---
+import LeadForm from './LeadForm.astro';
+import Icon from '../ui/Icon.astro';
+---
+
+<dialog class="modal" id="modal-lead" aria-labelledby="modal-lead-title">
+  <div class="modal__inner">
+    <button type="button" class="icon-btn modal__close" data-modal-close aria-label="Закрыть">
+      <Icon name="close" size={20} />
+    </button>
+
+    <p class="eyebrow">Коммерческое предложение</p>
+    <h2 id="modal-lead-title" class="modal__title">Получить КП за 1 час</h2>
+    <p class="modal__text">
+      Оставьте контакты — посчитаем стоимость по вашему объекту и пришлём предложение с фиксированной ставкой.
+    </p>
+
+    <LeadForm id="modal" formName="Заказать КП" submitLabel="Получить КП" withEmail withArea compact />
+  </div>
+</dialog>
+
+<style>
+  .modal__title {
+    margin-top: var(--sp-3);
+    font-size: var(--fs-h3);
+  }
+
+  .modal__text {
+    margin: var(--sp-3) 0 var(--sp-6);
+    font-size: var(--fs-sm);
+    color: var(--ink-muted);
+  }
+</style>

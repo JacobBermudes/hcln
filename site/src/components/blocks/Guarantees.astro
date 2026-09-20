@@ -1,0 +1,137 @@
+---
+import { guarantees } from '../../data/content';
+import { PLACEHOLDERS } from '../../data/site';
+import Section from '../ui/Section.astro';
+import Icon from '../ui/Icon.astro';
+import Button from '../ui/Button.astro';
+import Squiggle from '../ui/Squiggle.astro';
+
+/**
+ * Блок 11 из doc 03 — блок для финансового директора и службы безопасности.
+ * На текущем сайте отсутствует полностью, и это одна из главных причин
+ * потери крупных заявок. Поэтому тёмная панель: блок должен иметь вес.
+ */
+---
+
+<Section id="dokumenty" labelledby="guar-title">
+  <div class="guar panel panel--dark" data-reveal>
+    <Squiggle color="orange" width={300} class="guar__squiggle" />
+
+    <div class="guar__head">
+      <p class="eyebrow guar__eyebrow">Юридическая часть</p>
+      <h2 class="guar__title" id="guar-title">Работаем официально</h2>
+      <p class="guar__sub">
+        Всё, что обычно проверяют бухгалтерия и служба безопасности заказчика, — на одной странице.
+      </p>
+
+      <div class="guar__actions">
+        <Button href="/dokumenty/" variant="white" icon="download">Скачать образец договора</Button>
+        <Button variant="blue" data-modal-open="lead">Запросить реквизиты</Button>
+      </div>
+    </div>
+
+    <ul class="guar__list">
+      {guarantees.map((g) => (
+        <li data-reveal-item>
+          <Icon name="checkCircle" size={20} />
+          <span>{g}</span>
+        </li>
+      ))}
+    </ul>
+
+    <p class="guar__req">
+      {PLACEHOLDERS.legalName} · ИНН {PLACEHOLDERS.inn} · ОГРН {PLACEHOLDERS.ogrn}
+    </p>
+  </div>
+</Section>
+
+<style>
+  .guar {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: clamp(1.5rem, 0.8rem + 3vw, 3.5rem);
+  }
+
+  .guar__squiggle {
+    right: -80px;
+    top: -60px;
+    opacity: 0.14;
+  }
+
+  .guar__head {
+    position: relative;
+    z-index: 1;
+  }
+
+  .guar__eyebrow {
+    color: var(--orange);
+  }
+
+  .guar__eyebrow::before {
+    background: var(--blue);
+  }
+
+  .guar__title {
+    margin-top: var(--sp-3);
+  }
+
+  .guar__sub {
+    max-width: 40ch;
+    margin-top: var(--sp-4);
+    color: rgb(255 255 255 / 0.7);
+  }
+
+  .guar__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+    margin-top: var(--sp-6);
+  }
+
+  .guar__list {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-4) var(--sp-5);
+    align-content: start;
+  }
+
+  .guar__list li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    font-size: var(--fs-sm);
+    color: rgb(255 255 255 / 0.82);
+  }
+
+  .guar__list svg {
+    flex: none;
+    margin-top: 1px;
+    color: var(--orange);
+  }
+
+  .guar__req {
+    grid-column: 1 / -1;
+    position: relative;
+    z-index: 1;
+    padding-top: var(--sp-5);
+    border-top: 1px solid rgb(255 255 255 / 0.12);
+    font-size: var(--fs-caption);
+    color: rgb(255 255 255 / 0.5);
+  }
+
+  @media (max-width: 900px) {
+    .guar {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .guar__list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

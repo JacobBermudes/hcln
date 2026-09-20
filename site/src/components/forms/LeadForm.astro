@@ -1,0 +1,175 @@
+---
+import Button from '../ui/Button.astro';
+import { site, PLACEHOLDERS } from '../../data/site';
+
+/**
+ * Форма заявки. Требования ТЗ §5:
+ * минимум полей, маска телефона, отдельный чекбокс согласия,
+ * honeypot, скрытые UTM + URL страницы, состояния загрузки и успеха.
+ */
+interface Props {
+  id: string;
+  formName: string; // попадает в CRM и в цель Метрики
+  submitLabel?: string;
+  variant?: 'primary' | 'blue';
+  withArea?: boolean;
+  withEmail?: boolean;
+  compact?: boolean;
+}
+
+const {
+  id,
+  formName,
+  submitLabel = 'Отправить заявку',
+  variant = 'primary',
+  withArea = false,
+  withEmail = false,
+  compact = false,
+} = Astro.props;
+---
+
+<form class:list={['form', compact && 'form--compact']} data-form data-form-name={formName} novalidate>
+  <div class="form__body">
+    <div class="form__grid">
+      <label class="field" for={`${id}-name`}>
+        <span class="field__label">Как к вам обращаться</span>
+        <input
+          class="field__control"
+          id={`${id}-name`}
+          name="name"
+          type="text"
+          autocomplete="name"
+          placeholder="Имя"
+          required
+        />
+        <span class="field__error">Укажите имя</span>
+      </label>
+
+      <label class="field" for={`${id}-phone`}>
+        <span class="field__label">Телефон</span>
+        <input
+          class="field__control"
+          id={`${id}-phone`}
+          name="phone"
+          type="tel"
+          inputmode="tel"
+          autocomplete="tel"
+          placeholder="+7 900 000-00-00"
+          required
+          data-phone
+        />
+        <span class="field__error">Укажите номер в формате +7 900 000-00-00</span>
+      </label>
+
+      {withEmail && (
+        <label class="field" for={`${id}-email`}>
+          <span class="field__label">E-mail для КП</span>
+          <input
+            class="field__control"
+            id={`${id}-email`}
+            name="email"
+            type="email"
+            inputmode="email"
+            autocomplete="email"
+            placeholder="name@company.ru"
+          />
+          <span class="field__error">Проверьте адрес электронной почты</span>
+        </label>
+      )}
+
+      {withArea && (
+        <label class="field" for={`${id}-area`}>
+          <span class="field__label">Площадь объекта, м²</span>
+          <input
+            class="field__control"
+            id={`${id}-area`}
+            name="area"
+            type="number"
+            inputmode="numeric"
+            min="10"
+            placeholder="400"
+          />
+          <span class="field__error">Укажите площадь числом</span>
+        </label>
+      )}
+    </div>
+
+    <label class="consent">
+      <input type="checkbox" name="consent" required data-consent />
+      <span>
+        Согласен на <a href="/soglasie-na-obrabotku/">обработку персональных данных</a> в соответствии с
+        <a href="/politika-konfidencialnosti/">политикой конфиденциальности</a>
+      </span>
+      <span class="field__error" data-consent-error>Без согласия мы не можем принять заявку</span>
+    </label>
+
+    <div class="form__actions">
+      <Button type="submit" variant={variant} data-submit>{submitLabel}</Button>
+      <p class="form__note">Ответим в течение {PLACEHOLDERS.responseMinutes} минут в рабочее время</p>
+    </div>
+
+    <!-- honeypot: живой человек это поле не увидит -->
+    <div class="hp" aria-hidden="true">
+      <label>Не заполняйте это поле<input type="text" name="company_website" tabindex="-1" autocomplete="off" /></label>
+    </div>
+
+    <input type="hidden" name="form_name" value={formName} />
+    <input type="hidden" name="source" value="" />
+    <input type="hidden" name="page_url" value="" data-page-url />
+    <input type="hidden" name="referrer" value="" data-referrer />
+    <input type="hidden" name="utm_source" value="" data-utm="utm_source" />
+    <input type="hidden" name="utm_medium" value="" data-utm="utm_medium" />
+    <input type="hidden" name="utm_campaign" value="" data-utm="utm_campaign" />
+    <input type="hidden" name="utm_term" value="" data-utm="utm_term" />
+    <input type="hidden" name="utm_content" value="" data-utm="utm_content" />
+    <input type="hidden" name="calc" value="" data-calc-payload />
+  </div>
+
+  <p class="form__status form__status--ok" role="status">
+    Заявка принята. Менеджер перезвонит в течение {PLACEHOLDERS.responseMinutes} минут.
+  </p>
+  <p class="form__status form__status--error" role="alert">
+    Не удалось отправить. Позвоните нам: <a href={site.phoneHref}>{site.phone}</a>
+  </p>
+</form>
+
+<style>
+  .form {
+    display: grid;
+    gap: var(--sp-4);
+  }
+
+  .form__body {
+    display: grid;
+    gap: var(--sp-5);
+  }
+
+  .form__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+    gap: var(--sp-4);
+  }
+
+  .form--compact .form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-4);
+  }
+
+  .consent {
+    position: relative;
+  }
+
+  .consent .field__error {
+    padding-left: 0;
+  }
+
+  .consent.has-error .field__error {
+    display: block;
+  }
+</style>

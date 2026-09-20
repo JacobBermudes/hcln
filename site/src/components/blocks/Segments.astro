@@ -1,0 +1,116 @@
+---
+import { services, serviceUrl } from '../../data/services';
+import Section from '../ui/Section.astro';
+import SectionHead from '../ui/SectionHead.astro';
+import Icon from '../ui/Icon.astro';
+import Button from '../ui/Button.astro';
+
+/**
+ * Блок 2 из doc 03 — второй блок, а не пятый: клиент должен сразу увидеть
+ * свой тип объекта. Сетка, не карусель: в карусели видно 3 из 11.
+ */
+---
+
+<Section id="uslugi" soft labelledby="segments-title">
+  <SectionHead
+    eyebrow="11 сегментов"
+    title="Убираем объекты любого типа"
+    highlight="любого типа"
+    sub="Найдите свой объект — на странице услуги есть состав работ, вилка цены и кейс из этого же сегмента."
+    id="segments-title"
+  >
+    <Button href="/uslugi/" variant="ghost" size="sm">Все услуги</Button>
+  </SectionHead>
+
+  <ul class="segs" data-reveal>
+    {services.map((s) => (
+      <li data-reveal-item>
+        <a class="card seg" href={serviceUrl(s.slug)}>
+          <span class="card__ico"><Icon name={s.icon} size={26} /></span>
+          <span class="card__title">{s.title}</span>
+          <span class="card__text">{s.teaser}</span>
+          <span class="seg__more">
+            Подробнее об услуге
+            <Icon name="arrow" size={15} />
+          </span>
+        </a>
+      </li>
+    ))}
+
+    <li data-reveal-item>
+      <div class="card seg seg--ask">
+        <span class="card__title">Не нашли свой объект?</span>
+        <span class="card__text">Посчитаем под задачу: медцентры, автосалоны, образовательные учреждения.</span>
+        <Button variant="blue" size="sm" data-modal-open="lead" class="seg__btn">Задать вопрос</Button>
+      </div>
+    </li>
+  </ul>
+</Section>
+
+<style>
+  .segs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--sp-4);
+  }
+
+  .seg {
+    height: 100%;
+  }
+
+  .seg__more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    margin-top: auto;
+    padding-top: var(--sp-5);
+    font-size: var(--fs-caption);
+    font-weight: 700;
+    color: var(--blue-deep);
+  }
+
+  .seg__more svg {
+    transition: transform var(--dur-hover) var(--ease-out);
+  }
+
+  .seg:hover .seg__more svg {
+    transform: translate(3px, -3px);
+  }
+
+  .seg--ask {
+    background: var(--ink);
+    border-color: transparent;
+    color: var(--white);
+  }
+
+  .seg--ask .card__title {
+    color: var(--white);
+  }
+
+  .seg--ask .card__text {
+    color: rgb(255 255 255 / 0.68);
+  }
+
+  .seg__btn {
+    margin-top: auto;
+    align-self: flex-start;
+  }
+
+  @media (max-width: 1100px) {
+    .segs {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 820px) {
+    .segs {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 420px) {
+    .segs {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

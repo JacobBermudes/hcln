@@ -1,0 +1,42 @@
+---
+import { trustStrip } from '../../data/site';
+
+/**
+ * Строка доверия. Документ 03: «самый недооценённый элемент — она делает
+ * больше для конверсии, чем весь блок "Почему мы"». Цифры считаются один раз.
+ */
+---
+
+<section class="trust" id="trust" aria-label="Компания в цифрах">
+  <div class="container">
+    <ul class="trust__grid" data-reveal>
+      {trustStrip.map((s) => (
+        <li class="stat" data-reveal-item>
+          <p class="stat__label">{s.label}</p>
+          <p class="stat__value">
+            <span data-count={s.value}>0</span>{s.suffix}
+          </p>
+          <p class="stat__cap">{s.caption}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .trust {
+    padding-block: var(--sp-6);
+  }
+
+  .trust__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--sp-4);
+  }
+
+  @media (max-width: 860px) {
+    .trust__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

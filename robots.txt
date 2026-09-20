@@ -1,0 +1,54 @@
+# robots.txt для БОЕВОГО домена
+# Заменяет текущий файл, который принадлежал другому проекту (center-part.ru)
+# и закрывал весь сайт директивой Disallow: /
+#
+# ВАЖНО: перед заливкой заменить hcln.ru на реальный боевой домен,
+# если он изменится.
+
+User-agent: *
+
+# Служебные и технические разделы
+Disallow: /admin/
+Disallow: /bitrix/
+Disallow: /local/
+Disallow: /upload/tmp/
+Disallow: /search/
+Disallow: /*?s=
+Disallow: /*?q=
+Disallow: /thanks/
+Disallow: /spasibo/
+
+# UTM и рекламные метки — чтобы не плодить дубли
+Clean-param: utm_source&utm_medium&utm_campaign&utm_term&utm_content&yclid&gclid&_openstat&from&roistat
+
+# Рекламные посадочные закрыты от индексации
+Disallow: /lp/
+
+# Явно открываем статику
+Allow: /assets/
+Allow: /upload/
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.webp$
+Allow: /*.avif$
+Allow: /*.svg$
+Allow: /*.woff2$
+
+Sitemap: https://hcln.ru/sitemap.xml
+
+
+# ─────────────────────────────────────────────────────────────
+# ДЛЯ ТЕСТОВОГО ДОМЕНА (hcln.test-1pos.ru) — отдельный файл:
+#
+#   User-agent: *
+#   Disallow: /
+#
+# Но одного robots.txt НЕДОСТАТОЧНО: он не запрещает индексацию
+# по внешним ссылкам. Тестовый контур обязательно закрыть
+# HTTP-авторизацией (.htpasswd или средствами хостинга).
+# Если тестовый домен уже в индексе — дополнительно поставить
+# 301-редирект на боевой.
+# ─────────────────────────────────────────────────────────────

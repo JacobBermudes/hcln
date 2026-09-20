@@ -1,0 +1,139 @@
+---
+import { includedTabs } from '../../data/content';
+import Section from '../ui/Section.astro';
+import SectionHead from '../ui/SectionHead.astro';
+import Icon from '../ui/Icon.astro';
+
+/**
+ * Блок 6 из doc 03 — снимает возражение «а вдруг они моют только полы».
+ * Вкладки по типам уборки, у каждой работы указана частота.
+ */
+---
+
+<Section soft labelledby="included-title">
+  <SectionHead
+    eyebrow="Состав работ"
+    title="Что именно мы делаем на объекте"
+    highlight="делаем на объекте"
+    sub="Полный перечень с частотой закрепляется в технологической карте — она становится приложением к договору."
+    id="included-title"
+  />
+
+  <div class="inc" data-tabs data-reveal>
+    <div class="tabs" role="tablist" aria-label="Виды уборки">
+      {includedTabs.map((t, i) => (
+        <button
+          type="button"
+          class="tab"
+          role="tab"
+          id={`tab-${t.id}`}
+          aria-controls={`panel-${t.id}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          tabindex={i === 0 ? 0 : -1}
+        >
+          {t.label}
+        </button>
+      ))}
+    </div>
+
+    {includedTabs.map((t, i) => (
+      <div
+        class="tabpanel"
+        role="tabpanel"
+        id={`panel-${t.id}`}
+        aria-labelledby={`tab-${t.id}`}
+        hidden={i !== 0}
+        tabindex="0"
+      >
+        <p class="inc__note">{t.note}</p>
+        <ul class="worklist">
+          {t.items.map((item) => (
+            <li>
+              <span class="inc__work">
+                <Icon name="check" size={18} />
+                {item.work}
+              </span>
+              <span class="chip">{item.freq}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+
+    <p class="inc__foot">
+      <Icon name="doc" size={20} />
+      <span>
+        Нужен полный перечень до подписания?
+        <a href="/dokumenty/">Скачайте типовую технологическую карту</a> — 47 пунктов по зонам.
+      </span>
+    </p>
+  </div>
+</Section>
+
+<style>
+  .inc {
+    padding: clamp(1.25rem, 0.7rem + 2.2vw, 2.5rem);
+    border-radius: var(--r-xl);
+    background: var(--white);
+  }
+
+  .inc__note {
+    margin-bottom: var(--sp-4);
+    font-size: var(--fs-sm);
+    color: var(--ink-soft);
+  }
+
+  .inc__work {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    font-size: var(--fs-sm);
+  }
+
+  .inc__work svg {
+    flex: none;
+    margin-top: 2px;
+    color: var(--blue);
+  }
+
+  .inc__foot {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    margin-top: var(--sp-6);
+    padding: var(--sp-5);
+    border-radius: var(--r-md);
+    background: var(--blue-soft);
+    font-size: var(--fs-sm);
+  }
+
+  .inc__foot svg {
+    flex: none;
+    margin-top: 2px;
+    color: var(--blue-deep);
+  }
+
+  .inc__foot a {
+    color: var(--blue-deep);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .tabpanel {
+    animation: panel-in 240ms var(--ease-out);
+  }
+
+  @keyframes panel-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tabpanel {
+      animation: none;
+    }
+  }
+</style>

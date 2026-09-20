@@ -1,0 +1,49 @@
+---
+import Icon from './Icon.astro';
+
+/**
+ * Pill-кнопка макета: текст + стрелка в круге справа.
+ * Рендерится как <a>, если передан href, иначе как <button>.
+ */
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'blue' | 'soft' | 'dark' | 'white' | 'ghost';
+  size?: 'md' | 'sm';
+  icon?: string | false;
+  block?: boolean;
+  type?: 'button' | 'submit';
+  class?: string;
+  [key: string]: unknown;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  icon = 'arrow',
+  block = false,
+  type = 'button',
+  class: cls = '',
+  ...rest
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+const classes = [
+  'btn',
+  `btn--${variant}`,
+  size === 'sm' && 'btn--sm',
+  block && 'btn--block',
+  cls,
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<Tag class={classes} href={href} type={href ? undefined : type} {...rest}>
+  <span><slot /></span>
+  {icon !== false && (
+    <span class="btn__ico" aria-hidden="true">
+      <Icon name={icon} size={16} stroke={2.1} />
+    </span>
+  )}
+</Tag>

@@ -1,0 +1,22 @@
+---
+/** Секция с общим вертикальным ритмом и опциональной подложкой. */
+interface Props {
+  id?: string;
+  soft?: boolean;
+  tight?: boolean;
+  class?: string;
+  labelledby?: string;
+}
+
+const { id, soft = false, tight = false, class: cls = '', labelledby } = Astro.props;
+---
+
+<section
+  id={id}
+  class:list={['section', soft && 'section--soft', tight && 'section--tight', cls]}
+  aria-labelledby={labelledby}
+>
+  <div class="container">
+    <slot />
+  </div>
+</section>

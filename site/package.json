@@ -1,0 +1,23 @@
+{
+  "name": "clean-office",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "images": "python3 scripts/build-images.py",
+    "logos": "python3 scripts/build-logos.py",
+    "brand": "python3 scripts/build-brand.py",
+    "assets": "npm run images && npm run logos && npm run brand"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^5.2.5"
+  },
+  "devDependencies": {
+    "@fontsource-variable/inter": "^5.1.1",
+    "@fontsource-variable/manrope": "^5.1.1"
+  }
+}

@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/blocks/Hero.astro';
+import TrustStrip from '../components/blocks/TrustStrip.astro';
+import Segments from '../components/blocks/Segments.astro';
+import Calculator from '../components/blocks/Calculator.astro';
+import Outsource from '../components/blocks/Outsource.astro';
+import Steps from '../components/blocks/Steps.astro';
+import Included from '../components/blocks/Included.astro';
+import Cases from '../components/blocks/Cases.astro';
+import BeforeAfter from '../components/blocks/BeforeAfter.astro';
+import Reviews from '../components/blocks/Reviews.astro';
+import Tariffs from '../components/blocks/Tariffs.astro';
+import Guarantees from '../components/blocks/Guarantees.astro';
+import Team from '../components/blocks/Team.astro';
+import Geography from '../components/blocks/Geography.astro';
+import Faq from '../components/blocks/Faq.astro';
+import FinalCta from '../components/blocks/FinalCta.astro';
+
+import { faq } from '../data/content';
+
+// FAQPage даёт расширенный сниппет — заметно повышает CTR (doc 05)
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+---
+
+<Base
+  title="Клининговая компания в Екатеринбурге — уборка офисов и коммерческих помещений"
+  description="Профессиональная уборка офисов, магазинов, складов и ресторанов в Екатеринбурге. Работаем по договору, от 45 ₽/м². Бесплатный выезд специалиста на объект."
+  schema={[faqSchema]}
+  heroOverlay
+>
+  {/* Порядок блоков — по 03-struktura-sajta-i-poryadok-blokov.md.
+      Он повторяет порядок вопросов в голове B2B-заказчика. */}
+  <Hero />
+  <TrustStrip />
+  <Segments />
+  <Calculator />
+  <Outsource />
+  <Steps />
+  <Included />
+  <Cases />
+  <BeforeAfter />
+  <Reviews />
+  <Tariffs />
+  <Guarantees />
+  <Team />
+  <Geography />
+  <Faq />
+  <FinalCta />
+</Base>

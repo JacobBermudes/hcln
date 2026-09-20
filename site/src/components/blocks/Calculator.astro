@@ -1,0 +1,559 @@
+---
+import { objectTypes, cleaningKinds, frequencies, extras, areaLimits } from '../../data/calculator';
+import { priceFactors } from '../../data/content';
+import Section from '../ui/Section.astro';
+import SectionHead from '../ui/SectionHead.astro';
+import Icon from '../ui/Icon.astro';
+import Squiggle from '../ui/Squiggle.astro';
+import Button from '../ui/Button.astro';
+
+/**
+ * Блок 3 из doc 03. Ключевое правило: калькулятор обязан показать цифру
+ * ДО запроса контактов. Калькулятор, который вместо результата просит
+ * телефон, воспринимается как обман.
+ *
+ * На мобильном — пошаговый режим, один вопрос на экран (doc 03, «мобильная
+ * версия»). Коэффициенты живут в src/data/calculator.ts.
+ */
+const steps = [
+  { n: 1, title: 'Тип объекта' },
+  { n: 2, title: 'Вид уборки' },
+  { n: 3, title: 'Площадь' },
+  { n: 4, title: 'Частота' },
+  { n: 5, title: 'Дополнительно' },
+];
+---
+
+<Section id="kalkulyator" labelledby="calc-title">
+  <SectionHead
+    eyebrow="Расчёт за минуту"
+    title="Узнайте стоимость за минуту"
+    highlight="за минуту"
+    sub="Диапазон появится сразу — контакты нужны только для точного коммерческого предложения."
+    id="calc-title"
+  />
+
+  <div class="calc" data-calc data-reveal>
+    <Squiggle color="blue" width={260} class="calc__squiggle" />
+
+    <div class="calc__form">
+      <!-- Прогресс, виден только на мобильном пошаговом режиме -->
+      <ol class="calc__progress" aria-hidden="true">
+        {steps.map((s) => (
+          <li data-progress-step={s.n}><span>{s.n}</span></li>
+        ))}
+      </ol>
+
+      <fieldset class="calc__step" data-step="1">
+        <legend class="calc__legend"><b>01</b> Тип объекта</legend>
+        <div class="calc__opts calc__opts--tiles">
+          {objectTypes.map((o, i) => (
+            <label class="opt opt--tile">
+              <input type="radio" name="objectType" value={o.id} checked={i === 0} />
+              <span class="opt__box">
+                <Icon name={o.icon} size={24} />
+                <span>{o.label}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset class="calc__step" data-step="2">
+        <legend class="calc__legend"><b>02</b> Вид уборки</legend>
+        <div class="calc__opts">
+          {cleaningKinds.map((k, i) => (
+            <label class="opt">
+              <input type="radio" name="kind" value={k.id} checked={i === 0} />
+              <span class="opt__box">{k.label}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset class="calc__step" data-step="3">
+        <legend class="calc__legend"><b>03</b> Площадь помещения</legend>
+        <div class="calc__area">
+          <input
+            class="calc__range"
+            type="range"
+            name="areaRange"
+            min={areaLimits.min}
+            max="5000"
+            step={areaLimits.step}
+            value={areaLimits.default}
+            aria-label="Площадь помещения, ползунок"
+            data-area-range
+          />
+          <label class="calc__num">
+            <input
+              type="number"
+              name="area"
+              inputmode="numeric"
+              min={areaLimits.min}
+              max={areaLimits.max}
+              step={areaLimits.step}
+              value={areaLimits.default}
+              aria-label="Площадь помещения в квадратных метрах"
+              data-area-input
+            />
+            <span>м²</span>
+          </label>
+        </div>
+        <p class="calc__hint">От {areaLimits.min} до {areaLimits.max.toLocaleString('ru-RU')} м². Больше — считаем индивидуально.</p>
+      </fieldset>
+
+      <fieldset class="calc__step" data-step="4">
+        <legend class="calc__legend"><b>04</b> Частота уборки</legend>
+        <div class="calc__opts">
+          {frequencies.map((f) => (
+            <label class="opt">
+              <input type="radio" name="frequency" value={f.id} checked={f.id === 'f5'} />
+              <span class="opt__box">{f.label}</span>
+            </label>
+          ))}
+        </div>
+        <p class="calc__hint" data-freq-note hidden>Для генеральной уборки и уборки после ремонта частота не применяется — это разовая работа.</p>
+      </fieldset>
+
+      <fieldset class="calc__step" data-step="5">
+        <legend class="calc__legend"><b>05</b> Дополнительно</legend>
+        <div class="calc__opts">
+          {extras.map((e) => (
+            <label class="opt">
+              <input type="checkbox" name="extras" value={e.id} />
+              <span class="opt__box">{e.label}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <!-- Навигация пошагового режима, только мобильный -->
+      <div class="calc__nav">
+        <button type="button" class="btn btn--ghost btn--sm" data-calc-prev>Назад</button>
+        <button type="button" class="btn btn--blue btn--sm" data-calc-next>
+          <span>Далее</span>
+          <span class="btn__ico" aria-hidden="true"><Icon name="arrowRight" size={15} stroke={2.1} /></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Результат виден всегда, ещё до контактов -->
+    <aside class="calc__result" aria-live="polite">
+      <p class="calc__result-label" data-result-label>Ориентировочная стоимость в месяц</p>
+
+      <p class="calc__price">
+        <span data-result-min>—</span>
+        <span class="calc__dash">–</span>
+        <span data-result-max>—</span>
+        <span class="calc__cur">₽</span>
+      </p>
+
+      <p class="calc__rate">
+        <span data-result-rate>—</span> ₽/м² · <span data-result-area>—</span> м²
+      </p>
+
+      <ul class="calc__summary" data-result-summary></ul>
+
+      <p class="calc__note">
+        Это ориентир по открытым ставкам. Точную цену фиксируем в договоре после бесплатного осмотра объекта.
+      </p>
+
+      <Button variant="primary" block data-modal-open="lead" class="calc__cta">Уточнить и получить КП</Button>
+    </aside>
+  </div>
+
+  <!-- От чего зависит цена -->
+  <div class="factors" data-reveal>
+    {priceFactors.map((f) => (
+      <article class="factor" data-reveal-item>
+        <p class="factor__n">{f.n}</p>
+        <h3 class="factor__title">{f.title}</h3>
+        <p class="factor__text">{f.text}</p>
+      </article>
+    ))}
+  </div>
+</Section>
+
+<style>
+  .calc {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: clamp(1.25rem, 0.6rem + 2.6vw, 2.5rem);
+    padding: clamp(1.25rem, 0.6rem + 2.6vw, 2.5rem);
+    border-radius: var(--r-xl);
+    background: var(--blue-soft);
+  }
+
+  .calc__squiggle {
+    left: -70px;
+    bottom: -80px;
+    opacity: 0.13;
+  }
+
+  .calc__form {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: var(--sp-6);
+    align-content: start;
+  }
+
+  .calc__step {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+
+  .calc__legend {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-4);
+    padding: 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-h4);
+    font-weight: 700;
+  }
+
+  .calc__legend b {
+    font-size: var(--fs-caption);
+    font-weight: 800;
+    color: var(--blue);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .calc__opts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+  }
+
+  .calc__opts--tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+
+  /* --- Вариант выбора: скрытый input + видимая плашка ------------------- */
+  .opt input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .opt__box {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    min-height: var(--tap);
+    padding: var(--sp-3) var(--sp-5);
+    border: 1px solid transparent;
+    border-radius: var(--r-pill);
+    background: var(--white);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--ink-muted);
+    cursor: pointer;
+    transition:
+      background-color var(--dur-hover) var(--ease-out),
+      color var(--dur-hover) var(--ease-out),
+      border-color var(--dur-hover) var(--ease-out);
+  }
+
+  .opt--tile .opt__box {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    border-radius: var(--r-md);
+    padding: var(--sp-4);
+    height: 100%;
+  }
+
+  .opt__box:hover {
+    border-color: var(--blue);
+    color: var(--ink);
+  }
+
+  .opt input:checked + .opt__box {
+    background: var(--blue);
+    border-color: transparent;
+    color: var(--white);
+  }
+
+  .opt input:focus-visible + .opt__box {
+    outline: 3px solid var(--blue);
+    outline-offset: 2px;
+  }
+
+  /* --- Площадь ---------------------------------------------------------- */
+  .calc__area {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-5);
+  }
+
+  .calc__range {
+    flex: 1;
+    min-width: 0;
+    height: 6px;
+    appearance: none;
+    border-radius: var(--r-pill);
+    background: linear-gradient(var(--blue), var(--blue)) 0 / var(--fill, 20%) 100% no-repeat, #cfe4f2;
+    cursor: pointer;
+  }
+
+  .calc__range::-webkit-slider-thumb {
+    appearance: none;
+    width: 26px;
+    height: 26px;
+    border: 5px solid var(--white);
+    border-radius: 50%;
+    background: var(--blue);
+    box-shadow: var(--shadow-md);
+    cursor: grab;
+  }
+
+  .calc__range::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border: 5px solid var(--white);
+    border-radius: 50%;
+    background: var(--blue);
+    cursor: grab;
+  }
+
+  .calc__num {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    flex: none;
+    padding: var(--sp-2) var(--sp-4);
+    border-radius: var(--r-pill);
+    background: var(--white);
+    font-weight: 700;
+  }
+
+  .calc__num input {
+    width: 5.5ch;
+    border: 0;
+    background: none;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.125rem;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .calc__num input:focus {
+    outline: none;
+    color: var(--blue-deep);
+  }
+
+  .calc__hint {
+    margin-top: var(--sp-3);
+    font-size: var(--fs-caption);
+    color: var(--ink-soft);
+  }
+
+  /* Шаг «частота» гаснет, когда выбрана разовая уборка */
+  .calc__step.is-muted .calc__opts {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  /* --- Результат -------------------------------------------------------- */
+  .calc__result {
+    position: sticky;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-self: start;
+    top: calc(var(--header-h-scrolled) + var(--sp-4));
+    padding: var(--sp-6);
+    border-radius: var(--r-lg);
+    background: var(--white);
+    box-shadow: var(--shadow-md);
+  }
+
+  .calc__result-label {
+    font-size: var(--fs-caption);
+    color: var(--ink-soft);
+  }
+
+  .calc__price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--sp-2);
+    margin-top: var(--sp-3);
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 1.1rem + 1.7vw, 2.125rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: var(--tracking-tight);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .calc__dash {
+    color: var(--ink-soft);
+    font-weight: 400;
+  }
+
+  .calc__cur {
+    color: var(--blue);
+  }
+
+  .calc__rate {
+    margin-top: var(--sp-2);
+    font-size: var(--fs-caption);
+    color: var(--ink-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .calc__summary {
+    display: grid;
+    gap: var(--sp-2);
+    margin-top: var(--sp-5);
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--line);
+    font-size: var(--fs-caption);
+    color: var(--ink-muted);
+  }
+
+  /* Строки сводки вставляет JS — у них нет scope-атрибута Astro,
+     поэтому правила для потомков объявляем глобально. */
+  .calc__summary :global(li) {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--sp-3);
+  }
+
+  .calc__summary :global(b) {
+    color: var(--ink);
+    text-align: right;
+  }
+
+  .calc__note {
+    margin: var(--sp-5) 0;
+    font-size: 0.8125rem;
+    color: var(--ink-soft);
+  }
+
+  .calc__cta {
+    margin-top: auto;
+  }
+
+  /* --- Прогресс и навигация: только мобильный --------------------------- */
+  .calc__progress,
+  .calc__nav {
+    display: none;
+  }
+
+  /* --- От чего зависит цена --------------------------------------------- */
+  .factors {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-5);
+    margin-top: var(--sp-7);
+  }
+
+  .factor__n {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--blue-soft);
+    line-height: 1;
+    -webkit-text-stroke: 1px var(--blue);
+  }
+
+  .factor__title {
+    margin-top: var(--sp-3);
+    font-size: var(--fs-h4);
+  }
+
+  .factor__text {
+    margin-top: var(--sp-3);
+    font-size: var(--fs-sm);
+    color: var(--ink-muted);
+  }
+
+  /* --- Адаптив ---------------------------------------------------------- */
+  @media (max-width: 1024px) {
+    .calc {
+      grid-template-columns: 1fr;
+    }
+
+    .calc__result {
+      position: static;
+    }
+
+    .factors {
+      grid-template-columns: 1fr;
+      gap: var(--sp-6);
+    }
+  }
+
+  /* Пошаговый режим: один вопрос на экран */
+  @media (max-width: 720px) {
+    .calc__form.is-stepped .calc__step {
+      display: none;
+    }
+
+    .calc__form.is-stepped .calc__step.is-current {
+      display: block;
+      animation: step-in 240ms var(--ease-out);
+    }
+
+    @keyframes step-in {
+      from {
+        opacity: 0;
+        transform: translateX(12px);
+      }
+    }
+
+    .calc__form.is-stepped .calc__progress {
+      display: flex;
+      gap: var(--sp-2);
+      counter-reset: step;
+    }
+
+    .calc__progress li {
+      flex: 1;
+      height: 4px;
+      border-radius: var(--r-pill);
+      background: #cfe4f2;
+      transition: background-color var(--dur-hover) var(--ease-out);
+    }
+
+    .calc__progress li span {
+      display: none;
+    }
+
+    .calc__progress li.is-done {
+      background: var(--blue);
+    }
+
+    .calc__form.is-stepped .calc__nav {
+      display: flex;
+      gap: var(--sp-3);
+      justify-content: space-between;
+    }
+
+    .calc__area {
+      flex-wrap: wrap;
+    }
+
+    .calc__range {
+      order: 2;
+      flex-basis: 100%;
+    }
+  }
+</style>
+
+<script>
+  import '../../scripts/calculator';
+</script>

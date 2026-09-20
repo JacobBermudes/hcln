@@ -1,0 +1,59 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  items: { label: string; href?: string }[];
+}
+const { items } = Astro.props;
+---
+
+<nav class="crumbs" aria-label="Хлебные крошки">
+  <ol>
+    <li><a href="/">Главная</a></li>
+    {items.map((item) => (
+      <li>
+        <Icon name="chevronDown" size={14} class="crumbs__sep" />
+        {item.href ? <a href={item.href}>{item.label}</a> : <span aria-current="page">{item.label}</span>}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  .crumbs {
+    padding-block: var(--sp-5) 0;
+  }
+
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2);
+    font-size: var(--fs-caption);
+    color: var(--ink-soft);
+  }
+
+  .crumbs li {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+
+  .crumbs a {
+    transition: color var(--dur-hover) var(--ease-out);
+  }
+
+  .crumbs a:hover {
+    color: var(--blue-deep);
+  }
+
+  .crumbs__sep {
+    transform: rotate(-90deg);
+    color: var(--line-strong);
+  }
+
+  [aria-current='page'] {
+    color: var(--ink);
+    font-weight: 600;
+  }
+</style>

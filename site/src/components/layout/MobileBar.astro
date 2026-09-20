@@ -1,0 +1,69 @@
+---
+import { site } from '../../data/site';
+import Icon from '../ui/Icon.astro';
+---
+
+<!--
+  Липкая нижняя панель. Требование doc 03: телефон и мессенджеры
+  должны быть видны на мобильном без открытия бургер-меню.
+-->
+<div class="mbar" aria-label="Быстрая связь">
+  <a class="mbar__item" href={site.phoneHref}>
+    <Icon name="phone" size={20} />
+    <span>Позвонить</span>
+  </a>
+  <a class="mbar__item" href={site.telegram} target="_blank" rel="noopener">
+    <Icon name="telegram" size={20} />
+    <span>Telegram</span>
+  </a>
+  <a class="mbar__item" href={site.whatsapp} target="_blank" rel="noopener">
+    <Icon name="whatsapp" size={20} />
+    <span>WhatsApp</span>
+  </a>
+  <button class="mbar__item mbar__item--cta" type="button" data-modal-open="lead">
+    <Icon name="doc" size={20} />
+    <span>Заказать КП</span>
+  </button>
+</div>
+
+<style>
+  .mbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-sticky);
+    display: none;
+    grid-template-columns: repeat(4, 1fr);
+    padding-bottom: env(safe-area-inset-bottom);
+    background: rgb(255 255 255 / 0.94);
+    backdrop-filter: blur(14px);
+    border-top: 1px solid var(--line);
+  }
+
+  .mbar__item {
+    display: grid;
+    place-items: center;
+    gap: 3px;
+    min-height: 60px;
+    padding: var(--sp-2);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+    transition: color var(--dur-hover) var(--ease-out);
+  }
+
+  .mbar__item:active {
+    color: var(--blue);
+  }
+
+  .mbar__item--cta {
+    color: var(--orange);
+  }
+
+  @media (max-width: 1023px) {
+    .mbar {
+      display: grid;
+    }
+  }
+</style>

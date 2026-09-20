@@ -1,0 +1,193 @@
+---
+import { tariffs } from '../../data/content';
+import Section from '../ui/Section.astro';
+import SectionHead from '../ui/SectionHead.astro';
+import Icon from '../ui/Icon.astro';
+import Button from '../ui/Button.astro';
+---
+
+<Section id="ceny" labelledby="tariffs-title">
+  <SectionHead
+    eyebrow="Тарифы"
+    title="Тарифы на регулярное обслуживание"
+    highlight="регулярное обслуживание"
+    sub="Ставка зависит от площади, графика и сложности объекта. Точную цену фиксируем в договоре после бесплатного осмотра."
+    id="tariffs-title"
+  >
+    <Button href="/ceny/" variant="ghost" size="sm">Полный прайс</Button>
+  </SectionHead>
+
+  <ul class="tar" data-reveal>
+    {tariffs.map((t) => (
+      <li class:list={['tar__card', t.featured && 'tar__card--hot']} data-reveal-item>
+        {t.featured && <span class="tar__badge">Чаще всего выбирают</span>}
+
+        <h3 class="tar__name">{t.name}</h3>
+        <p class="tar__note">{t.note}</p>
+
+        <p class="tar__price">
+          {t.price}<span>{t.unit}</span>
+        </p>
+
+        <ul class="checklist tar__items">
+          {t.items.map((item) => (
+            <li>
+              <Icon name="checkCircle" size={20} />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+
+        <Button
+          variant={t.featured ? 'primary' : 'ghost'}
+          block
+          data-modal-open="lead"
+          class="tar__cta"
+        >
+          Получить расчёт
+        </Button>
+      </li>
+    ))}
+  </ul>
+
+  <p class="tar__fix" data-reveal>
+    <Icon name="shield" size={22} />
+    <span>Цена фиксируется договором на весь срок и не меняется. Индексация — только по соглашению сторон.</span>
+  </p>
+</Section>
+
+<style>
+  .tar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-5);
+    align-items: start;
+  }
+
+  .tar__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: var(--sp-6);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    background: var(--white);
+    transition:
+      transform var(--dur-hover) var(--ease-out),
+      box-shadow var(--dur-hover) var(--ease-out);
+  }
+
+  .tar__card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Средний тариф выделен — единственный акцент в блоке */
+  .tar__card--hot {
+    border-color: transparent;
+    background: var(--ink);
+    color: rgb(255 255 255 / 0.72);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .tar__card--hot .tar__name {
+    color: var(--white);
+  }
+
+  .tar__card--hot .tar__price {
+    color: var(--white);
+  }
+
+  .tar__card--hot :global(.checklist svg) {
+    color: var(--orange);
+  }
+
+  .tar__badge {
+    position: absolute;
+    top: 0;
+    left: var(--sp-6);
+    transform: translateY(-50%);
+    padding: var(--sp-2) var(--sp-4);
+    border-radius: var(--r-pill);
+    background: var(--orange);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--white);
+    white-space: nowrap;
+  }
+
+  .tar__name {
+    font-size: var(--fs-h3);
+  }
+
+  .tar__note {
+    margin-top: var(--sp-2);
+    font-size: var(--fs-caption);
+    color: inherit;
+    opacity: 0.75;
+  }
+
+  .tar__price {
+    margin: var(--sp-5) 0;
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: var(--tracking-tight);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+  }
+
+  .tar__price span {
+    font-size: var(--fs-caption);
+    font-weight: 500;
+    color: var(--ink-soft);
+  }
+
+  .tar__card--hot .tar__price span {
+    color: rgb(255 255 255 / 0.6);
+  }
+
+  .tar__items {
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--line);
+    font-size: var(--fs-sm);
+  }
+
+  .tar__card--hot .tar__items {
+    border-top-color: rgb(255 255 255 / 0.14);
+  }
+
+  .tar__cta {
+    margin-top: var(--sp-6);
+  }
+
+  .tar__fix {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    margin-top: var(--sp-6);
+    padding: var(--sp-5);
+    border-radius: var(--r-md);
+    background: var(--blue-soft);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+  }
+
+  .tar__fix svg {
+    flex: none;
+    color: var(--blue-deep);
+  }
+
+  @media (max-width: 940px) {
+    .tar {
+      grid-template-columns: 1fr;
+    }
+
+    .tar__badge {
+      left: auto;
+      right: var(--sp-6);
+    }
+  }
+</style>

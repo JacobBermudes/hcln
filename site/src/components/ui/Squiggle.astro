@@ -1,0 +1,38 @@
+---
+/**
+ * Фирменная «загогулина» макета — рукописная волна-мазок.
+ * Используется как декоративный акцент в hero, цитате и блоке формы.
+ */
+interface Props {
+  color?: 'blue' | 'orange';
+  width?: number;
+  class?: string;
+  style?: string;
+  [key: string]: unknown;
+}
+
+// ...rest обязателен: через него приходит scope-атрибут Astro,
+// без которого стили родителя не достанут до этого элемента.
+const { color = 'blue', width = 220, class: cls = '', style, ...rest } = Astro.props;
+const h = Math.round(width * 0.66);
+---
+
+<svg
+  class:list={['squiggle', color === 'orange' && 'squiggle--orange', cls]}
+  style={style}
+  width={width}
+  height={h}
+  viewBox="0 0 200 132"
+  fill="none"
+  aria-hidden="true"
+  focusable="false"
+  {...rest}
+>
+  <path
+    d="M14 40c6-18 24-30 44-26 21 5 27 26 18 40-9 14-31 15-40 4-9-11-2-27 14-31 26-7 52 6 66 24 13 17 12 40-6 52-19 12-45 6-53-11-6-13 2-26 16-27"
+    stroke="currentColor"
+    stroke-width="21"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

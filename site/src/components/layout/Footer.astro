@@ -1,0 +1,246 @@
+---
+import { site, footerNav, PLACEHOLDERS } from '../../data/site';
+import { services, serviceUrl } from '../../data/services';
+import Logo from './Logo.astro';
+import Icon from '../ui/Icon.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="ftr">
+  <div class="container">
+    <div class="ftr__panel">
+      <div class="ftr__top">
+        <div class="ftr__brand">
+          <Logo invert />
+          <p class="ftr__tagline">Коммерческий клининг в Екатеринбурге и области. Работаем по договору с юридическими лицами.</p>
+
+          <a class="ftr__tel" href={site.phoneHref}>{site.phone}</a>
+          <a class="ftr__mail" href={`mailto:${site.email}`}>{site.email}</a>
+          <p class="ftr__hours">{site.hours}</p>
+
+          <div class="ftr__msg">
+            <a class="ftr__icon" href={site.telegram} target="_blank" rel="noopener" aria-label="Telegram">
+              <Icon name="telegram" size={20} />
+            </a>
+            <a class="ftr__icon" href={site.whatsapp} target="_blank" rel="noopener" aria-label="WhatsApp">
+              <Icon name="whatsapp" size={20} />
+            </a>
+          </div>
+        </div>
+
+        <nav class="ftr__cols" aria-label="Карта сайта">
+          <div class="ftr__col">
+            <h2 class="ftr__title">Услуги</h2>
+            <ul>
+              {services.map((s) => (
+                <li><a href={serviceUrl(s.slug)}>{s.menuTitle}</a></li>
+              ))}
+            </ul>
+          </div>
+
+          {footerNav.map((col) => (
+            <div class="ftr__col">
+              <h2 class="ftr__title">{col.title}</h2>
+              <ul>
+                {col.links.map((l) => (
+                  <li><a href={l.href}>{l.label}</a></li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
+      </div>
+
+      <div class="ftr__legal">
+        <p class="ftr__req">
+          {PLACEHOLDERS.legalName} · ИНН {PLACEHOLDERS.inn} · ОГРН {PLACEHOLDERS.ogrn} · {PLACEHOLDERS.legalAddress}
+        </p>
+        <p class="ftr__disclaimer">
+          Информация на сайте не является публичной офертой. Стоимость определяется после осмотра объекта.
+        </p>
+      </div>
+
+      <div class="ftr__bottom">
+        <p>© {year} {site.brand}</p>
+        <ul class="ftr__policy">
+          <li><a href="/politika-konfidencialnosti/">Политика конфиденциальности</a></li>
+          <li><a href="/soglasie-na-obrabotku/">Согласие на обработку данных</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .ftr {
+    padding-block: var(--sp-7) var(--sp-5);
+  }
+
+  /* Тёмная скруглённая панель с отступом от краёв — приём макета */
+  .ftr__panel {
+    padding: clamp(1.75rem, 1rem + 3vw, 3.5rem);
+    border-radius: var(--r-2xl);
+    background: var(--ink);
+    color: rgb(255 255 255 / 0.72);
+  }
+
+  .ftr__top {
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) 2fr;
+    gap: var(--sp-8) var(--sp-7);
+  }
+
+  .ftr__tagline {
+    max-width: 34ch;
+    margin-top: var(--sp-5);
+    font-size: var(--fs-sm);
+  }
+
+  .ftr__tel {
+    display: block;
+    margin-top: var(--sp-6);
+    font-family: var(--font-display);
+    font-size: clamp(1.375rem, 1.1rem + 1.2vw, 1.75rem);
+    font-weight: 800;
+    color: var(--white);
+    transition: color var(--dur-hover) var(--ease-out);
+  }
+
+  .ftr__tel:hover {
+    color: var(--blue);
+  }
+
+  .ftr__mail {
+    display: block;
+    margin-top: var(--sp-2);
+    color: var(--white);
+    transition: color var(--dur-hover) var(--ease-out);
+  }
+
+  .ftr__mail:hover {
+    color: var(--blue);
+  }
+
+  .ftr__hours {
+    margin-top: var(--sp-2);
+    font-size: var(--fs-caption);
+  }
+
+  .ftr__msg {
+    display: flex;
+    gap: var(--sp-2);
+    margin-top: var(--sp-5);
+  }
+
+  .ftr__icon {
+    display: grid;
+    place-items: center;
+    width: var(--tap);
+    height: var(--tap);
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.08);
+    color: var(--white);
+    transition: background-color var(--dur-hover) var(--ease-out);
+  }
+
+  .ftr__icon:hover {
+    background: var(--blue);
+  }
+
+  .ftr__cols {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: var(--sp-6);
+  }
+
+  .ftr__title {
+    margin-bottom: var(--sp-4);
+    font-size: var(--fs-caption);
+    font-weight: 700;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--white);
+  }
+
+  .ftr__col ul {
+    display: grid;
+    gap: var(--sp-2);
+  }
+
+  .ftr__col a {
+    font-size: var(--fs-sm);
+    transition: color var(--dur-hover) var(--ease-out);
+  }
+
+  .ftr__col a:hover {
+    color: var(--white);
+  }
+
+  .ftr__legal {
+    margin-top: var(--sp-8);
+    padding-top: var(--sp-5);
+    border-top: 1px solid rgb(255 255 255 / 0.1);
+    font-size: var(--fs-caption);
+  }
+
+  .ftr__req {
+    color: rgb(255 255 255 / 0.6);
+  }
+
+  .ftr__disclaimer {
+    margin-top: var(--sp-2);
+    color: rgb(255 255 255 / 0.42);
+  }
+
+  .ftr__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-4);
+    margin-top: var(--sp-5);
+    font-size: var(--fs-caption);
+  }
+
+  .ftr__policy {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-5);
+  }
+
+  .ftr__policy a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color var(--dur-hover) var(--ease-out);
+  }
+
+  .ftr__policy a:hover {
+    color: var(--white);
+  }
+
+  @media (max-width: 900px) {
+    .ftr__top {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .ftr__cols {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .ftr__cols {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Не заезжаем под липкую мобильную панель */
+  @media (max-width: 1023px) {
+    .ftr {
+      padding-bottom: calc(var(--sp-9) + env(safe-area-inset-bottom));
+    }
+  }
+</style>

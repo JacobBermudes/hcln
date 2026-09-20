@@ -1,0 +1,545 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import Section from '../../components/ui/Section.astro';
+import SectionHead from '../../components/ui/SectionHead.astro';
+import Icon from '../../components/ui/Icon.astro';
+import Button from '../../components/ui/Button.astro';
+import Picture from '../../components/ui/Picture.astro';
+import Steps from '../../components/blocks/Steps.astro';
+import BeforeAfter from '../../components/blocks/BeforeAfter.astro';
+import Faq from '../../components/blocks/Faq.astro';
+import FinalCta from '../../components/blocks/FinalCta.astro';
+import { services, serviceUrl, getService } from '../../data/services';
+import { cases } from '../../data/content';
+import { site, PLACEHOLDERS } from '../../data/site';
+
+/**
+ * Единый шаблон посадочной страницы услуги.
+ * Порядок секций — из 03-struktura-sajta-i-poryadok-blokov.md, часть 4.
+ *
+ * Пока рендерим только «Уборка офиса» как эталон: остальные 10 включаются
+ * снятием фильтра, когда стиль утверждён.
+ */
+export const getStaticPaths = (() => {
+  const ready = ['uborka-ofisa'];
+  return services.filter((s) => ready.includes(s.slug)).map((s) => ({ params: { slug: s.slug } }));
+}) satisfies GetStaticPaths;
+
+const { slug } = Astro.params;
+const service = getService(slug!)!;
+const related = service.related.map((r) => getService(r)!).filter(Boolean);
+const caseItem = cases[0];
+
+// Вилка цены по площади — три ступени
+const priceRows = [
+  { area: 'до 300 м²', rate: `от ${Math.round(service.priceFrom * 1.25)} ₽/м²`, note: 'минимальный заказ обсуждается' },
+  { area: '300–1 000 м²', rate: `от ${service.priceFrom} ₽/м²`, note: 'базовая ставка' },
+  { area: 'от 1 000 м²', rate: `от ${Math.round(service.priceFrom * 0.88)} ₽/м²`, note: 'скидка за объём' },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: service.h1,
+    serviceType: service.menuTitle,
+    provider: { '@id': `${site.domain}/#organization` },
+    areaServed: { '@type': 'City', name: 'Екатеринбург' },
+    description: service.lead,
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'RUB',
+      priceSpecification: {
+        '@type': 'UnitPriceSpecification',
+        price: service.priceFrom,
+        priceCurrency: 'RUB',
+        unitCode: 'MTK',
+        description: service.priceNote,
+      },
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Главная', item: site.domain + '/' },
+      { '@type': 'ListItem', position: 2, name: 'Услуги', item: site.domain + '/uslugi/' },
+      { '@type': 'ListItem', position: 3, name: service.menuTitle, item: site.domain + serviceUrl(service.slug) },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: service.faq.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+];
+---
+
+<Base title={service.seo.title} description={service.seo.description} schema={schema} ogImage={`/img/${service.photo}-1200.webp`}>
+  <div class="container">
+    <Breadcrumbs items={[{ label: 'Услуги', href: '/uslugi/' }, { label: service.menuTitle }]} />
+  </div>
+
+  {/* 1–2. Первый экран: буллеты, вилка цены, CTA */}
+  <section class="shero" aria-labelledby="s-title">
+    <div class="container">
+      <div class="shero__grid">
+        <div class="shero__text">
+          <p class="eyebrow">Коммерческий клининг · {site.city}</p>
+          <h1 id="s-title" class="word-rise">{service.h1}</h1>
+          <p class="shero__lead">{service.lead}</p>
+
+          <ul class="shero__facts">
+            <li>
+              <b>от {service.priceFrom} ₽/м²</b>
+              <i>{service.priceNote}</i>
+            </li>
+            <li>
+              <b>{PLACEHOLDERS.contractDays} дня</b>
+              <i>от заявки до подписанного договора</i>
+            </li>
+            <li>
+              <b>{PLACEHOLDERS.replacementHours} часа</b>
+              <i>на замену сотрудника при невыходе</i>
+            </li>
+          </ul>
+
+          <div class="shero__actions">
+            <Button href="/#kalkulyator" variant="primary">Рассчитать стоимость</Button>
+            <Button variant="ghost" data-modal-open="lead">Получить КП за 1 час</Button>
+          </div>
+        </div>
+
+        <Picture
+          name={service.photo}
+          alt={service.h1}
+          ratio="4-3"
+          sizes="(max-width: 900px) 100vw, 45vw"
+          priority
+          class="shero__photo"
+        />
+      </div>
+    </div>
+  </section>
+
+  {/* 3. Кому подходит */}
+  <Section soft labelledby="suit-title">
+    <SectionHead eyebrow="Кому подходит" title="Какие объекты берём" highlight="объекты берём" id="suit-title" />
+    <ul class="suit" data-reveal>
+      {service.suitableFor.map((s) => (
+        <li data-reveal-item>
+          <Icon name="checkCircle" size={20} />
+          <span>{s}</span>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  {/* 4. Что входит */}
+  <Section labelledby="works-title">
+    <SectionHead
+      eyebrow="Состав работ"
+      title="Что входит в услугу"
+      highlight="входит в услугу"
+      sub="Итоговый перечень с частотой закрепляется технологической картой — она становится приложением к договору."
+      id="works-title"
+    />
+    <ul class="worklist works" data-reveal>
+      {service.works.map((w) => (
+        <li>
+          <span class="works__name">
+            <Icon name="check" size={18} />
+            {w.work}
+          </span>
+          <span class="chip">{w.freq}</span>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  {/* 5. Цены */}
+  <Section soft labelledby="price-title">
+    <SectionHead
+      eyebrow="Цены"
+      title="Сколько это стоит"
+      highlight="это стоит"
+      sub="Ставка зависит от площади, графика и сложности. Точную цену фиксируем в договоре после бесплатного осмотра."
+      id="price-title"
+    >
+      <Button href="/ceny/" variant="ghost" size="sm">Полный прайс</Button>
+    </SectionHead>
+
+    <ul class="prices" data-reveal>
+      {priceRows.map((r) => (
+        <li class="price" data-reveal-item>
+          <p class="price__area">{r.area}</p>
+          <p class="price__rate">{r.rate}</p>
+          <p class="price__note">{r.note}</p>
+        </li>
+      ))}
+    </ul>
+
+    <p class="prices__fix">
+      <Icon name="shield" size={22} />
+      <span>Инвентарь, профессиональная химия и расходники включены в ставку. Цена не меняется в течение срока договора.</span>
+    </p>
+  </Section>
+
+  {/* 6. Специфика сегмента */}
+  <Section labelledby="spec-title">
+    <div class="spec">
+      <div>
+        <p class="eyebrow">Специфика</p>
+        <h2 id="spec-title" class="spec__title">{service.specifics.title}</h2>
+        <p class="spec__text">{service.specifics.text}</p>
+      </div>
+      <Picture
+        name="equip-kit"
+        alt="Профессиональное оборудование и химия"
+        ratio="4-3"
+        sizes="(max-width: 900px) 100vw, 40vw"
+        class="spec__photo"
+      />
+    </div>
+  </Section>
+
+  {/* 7. Кейс из этого же сегмента */}
+  <Section soft labelledby="case-title">
+    <SectionHead eyebrow="Кейс" title="Как это выглядит на практике" highlight="на практике" id="case-title" />
+
+    <article class="scase" data-reveal>
+      <Picture
+        name={caseItem.photo}
+        alt={`${caseItem.segment}: ${caseItem.type}`}
+        ratio="4-3"
+        sizes="(max-width: 900px) 100vw, 42vw"
+        class="scase__photo"
+      />
+      <div class="scase__body">
+        <img class="scase__logo" src={caseItem.logo.file} alt={`Логотип «${caseItem.logo.name}»`} width="150" height="44" loading="lazy" />
+        <h3 class="scase__title">{caseItem.type}</h3>
+        <p class="scase__task"><b>Задача.</b> {caseItem.task}</p>
+        <p class="scase__task"><b>Что сделали.</b> {caseItem.done}</p>
+        <ul class="scase__results">
+          {caseItem.results.map((r) => (
+            <li><Icon name="check" size={16} />{r}</li>
+          ))}
+        </ul>
+        <Button href={`/kejsy/${caseItem.slug}/`} variant="ghost" size="sm">Смотреть кейс</Button>
+      </div>
+    </article>
+  </Section>
+
+  {/* 8. До / после */}
+  <BeforeAfter />
+
+  {/* 9. Как начать работать */}
+  <Steps />
+
+  {/* 10. FAQ по сегменту */}
+  <Faq items={service.faq} title="Вопросы по этой услуге" id="service-faq" />
+
+  {/* 11. Перелинковка на смежные услуги */}
+  <Section soft labelledby="rel-title">
+    <SectionHead eyebrow="Смежные услуги" title="Часто берут вместе" highlight="вместе" id="rel-title" />
+    <ul class="rel" data-reveal>
+      {related.map((r) => (
+        <li data-reveal-item>
+          <a class="card" href={serviceUrl(r.slug)}>
+            <span class="card__ico"><Icon name={r.icon} size={26} /></span>
+            <span class="card__title">{r.title}</span>
+            <span class="card__text">{r.teaser}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <FinalCta />
+</Base>
+
+<style>
+  /* --- Первый экран услуги ------------------------------------------------ */
+  .shero {
+    padding-block: var(--sp-6) var(--section-gap);
+  }
+
+  .shero__grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: clamp(1.5rem, 0.8rem + 3vw, 3.5rem);
+    align-items: center;
+  }
+
+  .shero h1 {
+    margin-top: var(--sp-4);
+  }
+
+  .shero__lead {
+    max-width: 52ch;
+    margin-top: var(--sp-5);
+    font-size: var(--fs-lead);
+    color: var(--ink-muted);
+  }
+
+  .shero__facts {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    justify-content: start;
+    gap: var(--sp-6);
+    margin-top: var(--sp-6);
+    padding-block: var(--sp-5);
+    border-block: 1px solid var(--line);
+  }
+
+  .shero__facts b {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--fs-h4);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shero__facts i {
+    display: block;
+    max-width: 22ch;
+    margin-top: 2px;
+    font-style: normal;
+    font-size: 0.8125rem;
+    color: var(--ink-soft);
+  }
+
+  .shero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+    margin-top: var(--sp-6);
+  }
+
+  .shero__photo {
+    border-radius: var(--r-xl);
+  }
+
+  /* --- Кому подходит ------------------------------------------------------ */
+  .suit {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-4);
+  }
+
+  .suit li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    padding: var(--sp-5);
+    border-radius: var(--r-md);
+    background: var(--white);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+  }
+
+  .suit svg {
+    flex: none;
+    margin-top: 1px;
+    color: var(--blue);
+  }
+
+  /* --- Состав работ ------------------------------------------------------- */
+  .works {
+    padding: clamp(1rem, 0.6rem + 1.8vw, 2rem);
+    border-radius: var(--r-lg);
+    background: var(--surface);
+  }
+
+  .works__name {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    font-size: var(--fs-sm);
+  }
+
+  .works__name svg {
+    flex: none;
+    margin-top: 2px;
+    color: var(--blue);
+  }
+
+  /* --- Цены --------------------------------------------------------------- */
+  .prices {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-4);
+  }
+
+  .price {
+    padding: var(--sp-6);
+    border-radius: var(--r-lg);
+    background: var(--white);
+  }
+
+  .price__area {
+    font-size: var(--fs-caption);
+    color: var(--ink-soft);
+  }
+
+  .price__rate {
+    margin-top: var(--sp-3);
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: var(--tracking-tight);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .price__note {
+    margin-top: var(--sp-2);
+    font-size: var(--fs-caption);
+    color: var(--ink-muted);
+  }
+
+  .prices__fix {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    margin-top: var(--sp-5);
+    padding: var(--sp-5);
+    border-radius: var(--r-md);
+    background: var(--blue-soft);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+  }
+
+  .prices__fix svg {
+    flex: none;
+    color: var(--blue-deep);
+  }
+
+  /* --- Специфика ---------------------------------------------------------- */
+  .spec {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: clamp(1.5rem, 0.8rem + 3vw, 3.5rem);
+    align-items: center;
+  }
+
+  .spec__title {
+    margin-top: var(--sp-3);
+  }
+
+  .spec__text {
+    max-width: 56ch;
+    margin-top: var(--sp-4);
+    font-size: var(--fs-lead);
+    color: var(--ink-muted);
+  }
+
+  .spec__photo {
+    border-radius: var(--r-xl);
+  }
+
+  /* --- Кейс --------------------------------------------------------------- */
+  .scase {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1.25rem, 0.7rem + 2.4vw, 2.5rem);
+    align-items: center;
+    padding: clamp(1.25rem, 0.7rem + 2.4vw, 2rem);
+    border-radius: var(--r-xl);
+    background: var(--white);
+  }
+
+  .scase__photo {
+    border-radius: var(--r-lg);
+  }
+
+  .scase__logo {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+    object-position: left center;
+    opacity: 0.86;
+  }
+
+  .scase__title {
+    margin-top: var(--sp-4);
+    font-size: var(--fs-h3);
+  }
+
+  .scase__task {
+    margin-top: var(--sp-3);
+    font-size: var(--fs-sm);
+    color: var(--ink-muted);
+  }
+
+  .scase__task b {
+    color: var(--ink);
+  }
+
+  .scase__results {
+    display: grid;
+    gap: var(--sp-2);
+    margin: var(--sp-5) 0;
+    font-size: var(--fs-caption);
+    font-weight: 600;
+  }
+
+  .scase__results li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-2);
+  }
+
+  .scase__results svg {
+    flex: none;
+    margin-top: 3px;
+    color: var(--ok);
+  }
+
+  /* --- Смежные ------------------------------------------------------------ */
+  .rel {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-4);
+  }
+
+  .rel :global(.card) {
+    height: 100%;
+  }
+
+  /* --- Адаптив ------------------------------------------------------------ */
+  @media (max-width: 900px) {
+    .shero__grid,
+    .spec,
+    .scase {
+      grid-template-columns: 1fr;
+    }
+
+    .shero__photo {
+      order: -1;
+    }
+
+    .suit,
+    .prices,
+    .rel {
+      grid-template-columns: 1fr;
+    }
+
+    .shero__facts {
+      grid-template-columns: 1fr;
+      gap: var(--sp-4);
+    }
+  }
+
+  @media (min-width: 561px) and (max-width: 900px) {
+    .suit,
+    .prices,
+    .rel {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

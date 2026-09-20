@@ -1,0 +1,74 @@
+---
+/**
+ * Единый линейный набор иконок: обводка 1.5–2px, без заливок.
+ * Смешивать линейные и залитые иконки в одном блоке нельзя (doc 07).
+ */
+interface Props {
+  name: string;
+  size?: number;
+  class?: string;
+  stroke?: number;
+  [key: string]: unknown;
+}
+
+// ...rest несёт scope-атрибут Astro — без него стили родителя не применятся
+const { name, size = 24, class: cls = '', stroke = 1.7, ...rest } = Astro.props;
+
+const paths: Record<string, string> = {
+  // --- сегменты услуг ---
+  office: '<path d="M3 21h18M5 21V6a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v15M14 21V10h4a1 1 0 0 1 1 1v10M8 9h3M8 13h3M8 17h3"/>',
+  shop: '<path d="M3 9h18l-1.2-4.2A1 1 0 0 0 18.8 4H5.2a1 1 0 0 0-1 .8L3 9Zm1 0v11a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9M9 21v-6h6v6"/>',
+  building: '<path d="M3 21h18M4 21V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v17M12 21V9h7a1 1 0 0 1 1 1v11M7 7h2M7 11h2M7 15h2M15 13h2M15 17h2"/>',
+  warehouse: '<path d="m3 9 9-5 9 5v12H3V9Z"/><path d="M7 21v-7h10v7M7 17h10"/>',
+  restaurant: '<path d="M6 3v8a2 2 0 0 0 4 0V3M8 11v10M16 3c-1.5 1-2 3-2 5s.5 3 2 3 2-1 2-3-.5-4-2-5Zm0 8v10"/>',
+  hotel: '<path d="M3 20V6M3 12h11a4 4 0 0 1 4 4v4M3 20h18M6.5 9.5h.01M6 9.5a.5.5 0 1 0 1 0 .5.5 0 0 0-1 0Z"/>',
+  salon: '<path d="M6 4.5 15 15M18 4.5 9 15M7.5 20a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Zm9 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>',
+  fitness: '<path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"/>',
+  residential: '<path d="m3 10 9-6 9 6v11H3V10Z"/><path d="M9 21v-6h6v6M8 12h2M14 12h2"/>',
+  window: '<rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M12 3v18M4 12h16"/>',
+  sofa: '<path d="M4 11V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3M3 11h18v6H3v-6Zm2 6v2m14-2v2M8 11V9m8 2V9"/>',
+
+  // --- интерфейс ---
+  arrow: '<path d="M7 17 17 7M9 7h8v8"/>',
+  arrowRight: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  chevronDown: '<path d="m6 9 6 6 6-6"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  check: '<path d="m4 12 5 5L20 6"/>',
+  checkCircle: '<circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/>',
+  close: '<path d="M6 6l12 12M18 6 6 18"/>',
+  phone: '<path d="M6.5 3h3l1.5 4-2 1.5a12 12 0 0 0 6.5 6.5L17 13l4 1.5v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4 5.2 2 2 0 0 1 6 3Z"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5.5l3.5 2"/>',
+  shield: '<path d="M12 3 5 6v6c0 4 3 7.5 7 9 4-1.5 7-5 7-9V6l-7-3Z"/><path d="m9 12 2 2 4-4"/>',
+  doc: '<path d="M14 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7l-4-4Z"/><path d="M14 3v4h4M9 13h6M9 17h4"/>',
+  download: '<path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/>',
+  pin: '<path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/>',
+  star: '<path d="m12 4 2.4 5 5.6.8-4 3.9 1 5.5-5-2.6-5 2.6 1-5.5-4-3.9 5.6-.8L12 4Z"/>',
+  users: '<path d="M16 20v-1.5a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4V20"/><circle cx="9.5" cy="7.5" r="3.5"/><path d="M18 11.5a3 3 0 1 0-2-5.3M21 20v-1.5a3.6 3.6 0 0 0-2.6-3.4"/>',
+  calc: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/>',
+  ruble: '<path d="M8 20V4h4.5a4 4 0 0 1 0 8H8m-2 3h7"/>',
+  sparkle: '<path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Zm7 9 .8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8L19 12Z"/>',
+  telegram: '<path d="M21 5 3 11.5l5 1.8L18.5 7.5 10 15l-.4 4.5 3-3.2 5 3.7L21 5Z"/>',
+  whatsapp: '<path d="M4 20l1.3-4a8 8 0 1 1 3 2.9L4 20Z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5.6 0 1.2-.6 1.2-1.2l-1.6-.8-.9 1a5.6 5.6 0 0 1-2.7-2.7l1-.9-.8-1.6c-.6 0-1.7.6-1.7 1.2Z"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  drag: '<path d="M9 6 5 12l4 6M15 6l4 6-4 6"/>',
+};
+
+const d = paths[name] ?? paths.sparkle;
+---
+
+<svg
+  class={cls}
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width={stroke}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+  {...rest}
+  set:html={d}
+/>

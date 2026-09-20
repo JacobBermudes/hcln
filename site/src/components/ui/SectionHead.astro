@@ -1,0 +1,38 @@
+---
+/**
+ * Шапка секции: надзаголовок капсом, заголовок обычным регистром,
+ * подзаголовок и опциональное действие справа.
+ * Капс — только в надзаголовке (doc 07).
+ */
+interface Props {
+  eyebrow?: string;
+  title: string;
+  highlight?: string; // слово в заголовке, которое подсвечивается синим
+  sub?: string;
+  id?: string;
+  level?: 2 | 3;
+}
+
+const { eyebrow, title, highlight, sub, id, level = 2 } = Astro.props;
+const Tag = `h${level}` as 'h2' | 'h3';
+
+// Подсвечиваем только смысловое слово, не половину фразы
+const parts = highlight && title.includes(highlight) ? title.split(highlight) : null;
+---
+
+<div class="sec-head" data-reveal>
+  <div class="sec-head__text">
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    <Tag class="sec-head__title" id={id}>
+      {parts ? (
+        <>
+          {parts[0]}<span class="hl">{highlight}</span>{parts[1]}
+        </>
+      ) : (
+        title
+      )}
+    </Tag>
+    {sub && <p class="sec-head__sub">{sub}</p>}
+  </div>
+  <slot />
+</div>

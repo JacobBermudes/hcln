@@ -1,0 +1,162 @@
+---
+import { outsourceRows } from '../../data/content';
+import Section from '../ui/Section.astro';
+import SectionHead from '../ui/SectionHead.astro';
+import Icon from '../ui/Icon.astro';
+import Button from '../ui/Button.astro';
+
+/**
+ * Блок 4 из doc 03 — самый сильный B2B-аргумент, которого нет ни на
+ * текущем сайте, ни в старом макете.
+ */
+---
+
+<Section soft labelledby="outsource-title">
+  <SectionHead
+    eyebrow="Сравнение"
+    title="Штатная уборщица или клининг: что дешевле"
+    highlight="что дешевле"
+    sub="Ставка аутсорса выглядит выше зарплаты уборщицы ровно до тех пор, пока не сложить всё, что в неё уже входит."
+    id="outsource-title"
+  />
+
+  <div class="cmp" data-reveal>
+    <div class="cmp__head cmp__head--topic" aria-hidden="true"></div>
+    <div class="cmp__head cmp__head--staff">
+      <span class="chip">Уборщица в штате</span>
+    </div>
+    <div class="cmp__head cmp__head--out">
+      <span class="chip chip--blue">Клининг на аутсорсе</span>
+    </div>
+
+    {outsourceRows.map((row) => (
+      <>
+        <div class="cmp__cell cmp__cell--topic">{row.topic}</div>
+        <div class="cmp__cell cmp__cell--staff">
+          <span class="cmp__label">В штате</span>
+          {row.staff}
+        </div>
+        <div class="cmp__cell cmp__cell--out">
+          <span class="cmp__label">Аутсорс</span>
+          <Icon name="check" size={18} />
+          {row.outsource}
+        </div>
+      </>
+    ))}
+  </div>
+
+  <div class="cmp__foot" data-reveal>
+    <p>Хотите увидеть разницу в рублях по вашему объекту? Посчитаем и покажем расчёт.</p>
+    <Button variant="blue" data-modal-open="lead">Посчитать экономию</Button>
+  </div>
+</Section>
+
+<style>
+  .cmp {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: 1px;
+    overflow: hidden;
+    border-radius: var(--r-lg);
+    background: var(--line);
+  }
+
+  .cmp__head {
+    padding: var(--sp-5);
+    background: var(--white);
+  }
+
+  .cmp__head--out {
+    background: var(--blue-soft);
+  }
+
+  .cmp__cell {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-2);
+    padding: var(--sp-5);
+    background: var(--white);
+    font-size: var(--fs-sm);
+    color: var(--ink-muted);
+  }
+
+  .cmp__cell--topic {
+    font-weight: 700;
+    color: var(--ink);
+    background: var(--surface);
+  }
+
+  .cmp__cell--out {
+    background: var(--blue-soft);
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .cmp__cell--out svg {
+    flex: none;
+    margin-top: 2px;
+    color: var(--blue);
+  }
+
+  /* Подпись колонки нужна только тогда, когда таблица схлопнулась */
+  .cmp__label {
+    display: none;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .cmp__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-5);
+    margin-top: var(--sp-6);
+    padding: var(--sp-6);
+    border-radius: var(--r-lg);
+    background: var(--white);
+  }
+
+  .cmp__foot p {
+    max-width: 48ch;
+    color: var(--ink-muted);
+  }
+
+  /* Таблица не сжимается в нечитаемый шрифт, а перестраивается в карточки */
+  @media (max-width: 760px) {
+    .cmp {
+      grid-template-columns: 1fr;
+      gap: 0;
+      background: transparent;
+    }
+
+    .cmp__head {
+      display: none;
+    }
+
+    .cmp__cell {
+      padding: var(--sp-3) var(--sp-5);
+    }
+
+    .cmp__cell--topic {
+      margin-top: var(--sp-3);
+      padding-top: var(--sp-4);
+      border-radius: var(--r-md) var(--r-md) 0 0;
+    }
+
+    .cmp__cell--out {
+      border-radius: 0 0 var(--r-md) var(--r-md);
+      padding-bottom: var(--sp-4);
+    }
+
+    .cmp__label {
+      display: block;
+      flex: none;
+      width: 5.5rem;
+      padding-top: 2px;
+    }
+  }
+</style>

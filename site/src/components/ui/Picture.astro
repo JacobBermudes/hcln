@@ -1,0 +1,57 @@
+---
+/**
+ * Изображение из public/img: WebP в четырёх ширинах, явные width/height
+ * (иначе скачет CLS), fetchpriority для первого экрана.
+ */
+interface Props {
+  name: string;
+  alt: string;
+  ratio?: '16-10' | '3-2' | '4-3' | '1-1' | 'portrait';
+  sizes?: string;
+  priority?: boolean;
+  class?: string;
+  zoom?: boolean;
+  [key: string]: unknown;
+}
+
+// ...rest несёт scope-атрибут Astro — без него стили родителя не применятся
+const {
+  name,
+  alt,
+  ratio = '4-3',
+  sizes = '(max-width: 768px) 100vw, 50vw',
+  priority = false,
+  class: cls = '',
+  zoom = true,
+  ...rest
+} = Astro.props;
+
+const WIDTHS = [480, 800, 1200, 1600];
+const RATIO: Record<string, number> = {
+  '16-10': 16 / 10,
+  '3-2': 3 / 2,
+  '4-3': 4 / 3,
+  '1-1': 1,
+  portrait: 3 / 4,
+};
+
+const r = RATIO[ratio];
+const srcset = WIDTHS.map((w) => `/img/${name}-${w}.webp ${w}w`).join(', ');
+const fallbackW = 800;
+const fallbackH = Math.round(fallbackW / r);
+---
+
+<div class:list={['media', `media--${ratio}`, zoom && 'media--zoom', cls]} {...rest}>
+  <img
+    src={`/img/${name}-${fallbackW}.webp`}
+    srcset={srcset}
+    sizes={sizes}
+    width={fallbackW}
+    height={fallbackH}
+    alt={alt}
+    loading={priority ? 'eager' : 'lazy'}
+    decoding={priority ? 'sync' : 'async'}
+    fetchpriority={priority ? 'high' : 'auto'}
+  />
+  <slot />
+</div>

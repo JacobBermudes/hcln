@@ -1,0 +1,126 @@
+/* ==========================================================================
+   Утилиты: контейнер, ритм секций, сетки, появление при скролле
+   ========================================================================== */
+
+@layer utilities {
+  .container {
+    width: 100%;
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* Узкая колонка для длинного текста: 60–75 символов */
+  .measure {
+    max-width: 62ch;
+  }
+
+  .section {
+    padding-block: var(--section-gap);
+  }
+
+  .section--tight {
+    padding-block: calc(var(--section-gap) * 0.62);
+  }
+
+  .section--soft {
+    background: var(--surface);
+  }
+
+  .stack > * + * {
+    margin-top: var(--flow, var(--sp-4));
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--sp-5);
+  }
+
+  .grid--2 {
+    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  }
+
+  .grid--3 {
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  }
+
+  .grid--4 {
+    grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .skip-link {
+    position: absolute;
+    top: var(--sp-3);
+    left: var(--sp-3);
+    z-index: 200;
+    padding: var(--sp-3) var(--sp-5);
+    border-radius: var(--r-pill);
+    background: var(--ink);
+    color: var(--white);
+    font-weight: 700;
+    transform: translateY(-200%);
+    transition: transform var(--dur-fast) var(--ease-out);
+  }
+
+  .skip-link:focus-visible {
+    transform: translateY(0);
+  }
+
+  .no-scroll {
+    overflow: hidden;
+  }
+
+  /* --- Появление при скролле -------------------------------------------
+     Один IntersectionObserver проставляет .is-in. Если JS не отработал,
+     класс .reveal без .js-ready не прячет контент — сайт читается всегда. */
+  .js-ready [data-reveal] {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity var(--dur-reveal) var(--ease-out),
+      transform var(--dur-reveal) var(--ease-out);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  .js-ready [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Заголовок H1 всплывает по словам */
+  .js-ready .word-rise > span {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(0.5em);
+    transition:
+      opacity 460ms var(--ease-out),
+      transform 460ms var(--ease-out);
+    transition-delay: calc(var(--i, 0) * 40ms);
+  }
+
+  .js-ready .word-rise.is-in > span {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .js-ready [data-reveal],
+    .js-ready .word-rise > span {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}

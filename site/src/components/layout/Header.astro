@@ -1,0 +1,493 @@
+---
+import { site, nav } from '../../data/site';
+import { services, serviceUrl } from '../../data/services';
+import Logo from './Logo.astro';
+import Icon from '../ui/Icon.astro';
+import Button from '../ui/Button.astro';
+
+interface Props {
+  /** Шапка лежит поверх полноэкранного первого экрана и до прокрутки прозрачна */
+  overlay?: boolean;
+}
+const { overlay = false } = Astro.props;
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => href !== '/' && path.startsWith(href);
+---
+
+<header class:list={['hdr', overlay && 'hdr--over']} id="header" data-header>
+  <div class="container hdr__inner">
+    <Logo />
+
+    <nav class="hdr__nav" aria-label="Основное меню">
+      <ul class="hdr__list">
+        {nav.map((item) =>
+          item.mega ? (
+            <li class="hdr__item hdr__item--mega" data-mega>
+              <button
+                type="button"
+                class:list={['hdr__link', isActive(item.href) && 'is-active']}
+                aria-expanded="false"
+                aria-controls="mega"
+                data-mega-btn
+              >
+                {item.label}
+                <Icon name="chevronDown" size={16} class="hdr__chev" />
+              </button>
+
+              <div class="mega" id="mega" hidden data-mega-panel>
+                <div class="container mega__inner">
+                  <div class="mega__grid">
+                    {services.map((s) => (
+                      <a class="mega__card" href={serviceUrl(s.slug)}>
+                        <span class="mega__ico"><Icon name={s.icon} size={22} /></span>
+                        <span class="mega__body">
+                          <span class="mega__title">{s.menuTitle}</span>
+                          <span class="mega__teaser">{s.teaser}</span>
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                  <div class="mega__foot">
+                    <a class="link-arrow" href="/uslugi/">
+                      Все услуги и цены
+                      <Icon name="arrow" size={16} />
+                    </a>
+                    <p class="mega__note">Не нашли свой тип объекта? Позвоните — посчитаем под задачу.</p>
+                  </div>
+                </div>
+              </div>
+            </li>
+          ) : (
+            <li class="hdr__item">
+              <a
+                class:list={['hdr__link', isActive(item.href) && 'is-active']}
+                href={item.href}
+              >
+                {item.label}
+              </a>
+            </li>
+          )
+        )}
+      </ul>
+    </nav>
+
+    <div class="hdr__side">
+      <div class="hdr__phone">
+        <a href={site.phoneHref} class="hdr__tel">{site.phone}</a>
+        <span class="hdr__hours">{site.hours}</span>
+      </div>
+
+      <div class="hdr__msg">
+        <a class="icon-btn" href={site.telegram} target="_blank" rel="noopener" aria-label="Написать в Telegram">
+          <Icon name="telegram" size={19} />
+        </a>
+        <a class="icon-btn" href={site.whatsapp} target="_blank" rel="noopener" aria-label="Написать в WhatsApp">
+          <Icon name="whatsapp" size={19} />
+        </a>
+      </div>
+
+      <Button size="sm" class="hdr__cta" data-modal-open="lead">Заказать КП</Button>
+
+      <button type="button" class="hdr__burger" aria-expanded="false" aria-controls="mnav" data-burger>
+        <span class="visually-hidden">Меню</span>
+        <Icon name="menu" size={24} />
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Мобильное меню -->
+<div class="mnav" id="mnav" hidden data-mnav>
+  <div class="mnav__inner">
+    <p class="eyebrow">Услуги</p>
+    <ul class="mnav__services">
+      {services.map((s) => (
+        <li>
+          <a href={serviceUrl(s.slug)}>
+            <Icon name={s.icon} size={20} />
+            {s.menuTitle}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <p class="eyebrow">Разделы</p>
+    <ul class="mnav__pages">
+      {nav.filter((n) => !n.mega).map((item) => (
+        <li><a href={item.href}>{item.label}</a></li>
+      ))}
+    </ul>
+
+    <Button href={site.phoneHref} variant="dark" icon="phone" block>{site.phone}</Button>
+  </div>
+</div>
+
+<style>
+  .hdr {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    background: rgb(255 255 255 / 0.88);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid transparent;
+    transition:
+      border-color var(--dur-header) var(--ease-out),
+      box-shadow var(--dur-header) var(--ease-out);
+  }
+
+  .hdr.is-scrolled {
+    border-bottom-color: var(--line);
+    box-shadow: 0 2px 20px rgb(5 10 29 / 0.05);
+  }
+
+  /* ----------------------------------------------------------------------
+     Режим поверх полноэкранного первого экрана.
+     До прокрутки шапка прозрачная и светлая — снимок с машиной виден
+     целиком, от края до края. При прокрутке возвращается обычный вид,
+     поэтому отдельного состояния поддерживать не нужно.
+     ---------------------------------------------------------------------- */
+  .hdr--over:not(.is-scrolled):not(.is-solid) {
+    background: transparent;
+    backdrop-filter: none;
+  }
+
+  .hdr--over:not(.is-scrolled):not(.is-solid) :global(.logo__text),
+  .hdr--over:not(.is-scrolled):not(.is-solid) :global(.logo__line:last-child) {
+    color: var(--white);
+  }
+
+  .hdr--over:not(.is-scrolled):not(.is-solid) :global(.logo__mark) {
+    background: rgb(255 255 255 / 0.16);
+  }
+
+  .hdr--over:not(.is-scrolled):not(.is-solid) .hdr__link {
+    color: rgb(255 255 255 / 0.82);
+  }
+
+  .hdr--over:not(.is-scrolled):not(.is-solid) .hdr__link:hover,
+  .hdr--over:not(.is-scrolled):not(.is-solid) .hdr__link.is-active {
+    background: rgb(255 255 255 / 0.14);
+    color: var(--white);
+  }
+
+  .hdr--over:not(.is-scrolled):not(.is-solid) .hdr__tel {
+    color: var(--white);
+  }
+
+  .hdr--over:not(.is-scrolled):not(.is-solid) .hdr__hours {
+    color: rgb(255 255 255 / 0.62);
+  }
+
+  .hdr--over:not(.is-scrolled):not(.is-solid) :global(.icon-btn) {
+    background: rgb(255 255 255 / 0.14);
+    color: var(--white);
+  }
+
+  .hdr--over:not(.is-scrolled):not(.is-solid) :global(.icon-btn:hover) {
+    background: var(--white);
+    color: var(--brand-deep);
+  }
+
+  .hdr--over:not(.is-scrolled):not(.is-solid) .hdr__burger {
+    background: rgb(255 255 255 / 0.14);
+    color: var(--white);
+  }
+
+  .hdr__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-5);
+    height: var(--header-h);
+    transition: height var(--dur-header) var(--ease-out);
+  }
+
+  .hdr.is-scrolled .hdr__inner {
+    height: var(--header-h-scrolled);
+  }
+
+  .hdr__nav {
+    margin-inline: auto;
+  }
+
+  .hdr__list {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+
+  .hdr__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+    padding: var(--sp-3) var(--sp-4);
+    border-radius: var(--r-pill);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    transition:
+      color var(--dur-hover) var(--ease-out),
+      background-color var(--dur-hover) var(--ease-out);
+  }
+
+  .hdr__link:hover,
+  .hdr__link.is-active {
+    color: var(--ink);
+    background: var(--surface);
+  }
+
+  .hdr__chev {
+    transition: transform var(--dur-hover) var(--ease-out);
+  }
+
+  .hdr__link[aria-expanded='true'] .hdr__chev {
+    transform: rotate(180deg);
+  }
+
+  .hdr__side {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+    flex: none;
+  }
+
+  .hdr__phone {
+    display: grid;
+    text-align: right;
+    line-height: 1.2;
+  }
+
+  .hdr__tel {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.0625rem;
+    white-space: nowrap;
+    transition: color var(--dur-hover) var(--ease-out);
+  }
+
+  .hdr__tel:hover {
+    color: var(--blue);
+  }
+
+  .hdr__hours {
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+
+  .hdr__msg {
+    display: flex;
+    gap: var(--sp-2);
+  }
+
+  .hdr__msg .icon-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .hdr__burger {
+    display: none;
+    width: var(--tap);
+    height: var(--tap);
+    place-items: center;
+    border-radius: var(--r-pill);
+    background: var(--surface);
+  }
+
+  /* --- Мегаменю ---------------------------------------------------------- */
+  .hdr__item--mega {
+    position: static;
+  }
+
+  .mega {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    z-index: var(--z-megamenu);
+    padding-block: var(--sp-6) var(--sp-5);
+    background: var(--white);
+    border-top: 1px solid var(--line);
+    box-shadow: var(--shadow-lg);
+    border-radius: 0 0 var(--r-xl) var(--r-xl);
+    animation: mega-in 200ms var(--ease-out);
+  }
+
+  .mega[hidden] {
+    display: none;
+  }
+
+  @keyframes mega-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+
+  .mega__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-2);
+  }
+
+  .mega__card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    border-radius: var(--r-sm);
+    transition: background-color var(--dur-hover) var(--ease-out);
+  }
+
+  .mega__card:hover {
+    background: var(--surface);
+  }
+
+  .mega__ico {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--blue-soft);
+    color: var(--blue-deep);
+    transition:
+      background-color var(--dur-hover) var(--ease-out),
+      color var(--dur-hover) var(--ease-out);
+  }
+
+  .mega__card:hover .mega__ico {
+    background: var(--blue);
+    color: var(--white);
+  }
+
+  .mega__body {
+    display: grid;
+    gap: 2px;
+  }
+
+  .mega__title {
+    font-weight: 700;
+    font-size: var(--fs-sm);
+  }
+
+  .mega__teaser {
+    font-size: 0.8125rem;
+    color: var(--ink-soft);
+  }
+
+  .mega__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-4);
+    margin-top: var(--sp-5);
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--line);
+  }
+
+  .mega__note {
+    font-size: var(--fs-caption);
+    color: var(--ink-soft);
+  }
+
+  /* --- Мобильное меню ---------------------------------------------------- */
+  .mnav {
+    position: fixed;
+    inset: var(--header-h-scrolled) 0 0;
+    z-index: var(--z-sticky);
+    overflow-y: auto;
+    background: var(--white);
+    animation: mnav-in 220ms var(--ease-out);
+  }
+
+  .mnav[hidden] {
+    display: none;
+  }
+
+  @keyframes mnav-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+  }
+
+  .mnav__inner {
+    display: grid;
+    gap: var(--sp-4);
+    padding: var(--sp-6) var(--gutter) calc(var(--sp-10) + env(safe-area-inset-bottom));
+  }
+
+  .mnav__services {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-2);
+  }
+
+  .mnav__services a {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    min-height: 56px;
+    padding: var(--sp-3) var(--sp-4);
+    border-radius: var(--r-sm);
+    background: var(--surface);
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .mnav__services svg {
+    flex: none;
+    color: var(--blue);
+  }
+
+  .mnav__pages {
+    display: grid;
+  }
+
+  .mnav__pages a {
+    display: block;
+    padding: var(--sp-4) 0;
+    border-bottom: 1px solid var(--line);
+    font-weight: 600;
+  }
+
+  /* --- Адаптив ----------------------------------------------------------- */
+  @media (max-width: 1180px) {
+    .hdr__phone {
+      display: none;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .hdr__nav,
+    .hdr__msg {
+      display: none;
+    }
+
+    .hdr__burger {
+      display: grid;
+    }
+
+    .hdr__inner {
+      height: var(--header-h-scrolled);
+      justify-content: space-between;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .hdr__cta {
+      display: none;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .mnav__services {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

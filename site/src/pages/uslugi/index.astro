@@ -1,0 +1,179 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import Section from '../../components/ui/Section.astro';
+import SectionHead from '../../components/ui/SectionHead.astro';
+import Icon from '../../components/ui/Icon.astro';
+import FinalCta from '../../components/blocks/FinalCta.astro';
+import Faq from '../../components/blocks/Faq.astro';
+import { services, serviceUrl } from '../../data/services';
+import { site } from '../../data/site';
+
+const READY = ['uborka-ofisa'];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Главная', item: site.domain + '/' },
+      { '@type': 'ListItem', position: 2, name: 'Услуги', item: site.domain + '/uslugi/' },
+    ],
+  },
+];
+---
+
+<Base
+  title="Услуги клининга в Екатеринбурге — уборка коммерческих помещений | CLEAN OFFICE"
+  description="11 направлений коммерческого клининга в Екатеринбурге: офисы, магазины, ТЦ и БЦ, склады, рестораны, гостиницы, ЖК, мойка окон и фасадов, химчистка мебели."
+  schema={schema}
+>
+  <div class="container">
+    <Breadcrumbs items={[{ label: 'Услуги' }]} />
+  </div>
+
+  <Section labelledby="uslugi-title">
+    <SectionHead
+      eyebrow="11 направлений"
+      title="Услуги коммерческого клининга"
+      highlight="коммерческого клининга"
+      sub="Убираем только коммерческие объекты: офисы, торговлю, производство, HoReCa и жилые комплексы. Квартиры и частные дома не берём."
+      id="uslugi-title"
+    />
+
+    <ul class="list" data-reveal>
+      {services.map((s) => (
+        <li data-reveal-item>
+          <a class="row" href={serviceUrl(s.slug)}>
+            <span class="row__ico"><Icon name={s.icon} size={26} /></span>
+
+            <span class="row__body">
+              <span class="row__title">
+                {s.menuTitle}
+                {!READY.includes(s.slug) && <span class="row__soon">страница готовится</span>}
+              </span>
+              <span class="row__teaser">{s.teaser}</span>
+            </span>
+
+            <span class="row__price">от {s.priceFrom} ₽/м²</span>
+            <span class="row__arrow"><Icon name="arrow" size={18} /></span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <Faq />
+  <FinalCta />
+</Base>
+
+<style>
+  .list {
+    display: grid;
+    gap: var(--sp-2);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: var(--sp-5);
+    padding: var(--sp-4) var(--sp-5);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    background: var(--white);
+    transition:
+      border-color var(--dur-hover) var(--ease-out),
+      background-color var(--dur-hover) var(--ease-out),
+      transform var(--dur-hover) var(--ease-out);
+  }
+
+  .row:hover {
+    border-color: var(--blue);
+    background: var(--blue-mist);
+    transform: translateX(3px);
+  }
+
+  .row__ico {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--blue-soft);
+    color: var(--blue-deep);
+    transition:
+      background-color var(--dur-hover) var(--ease-out),
+      color var(--dur-hover) var(--ease-out);
+  }
+
+  .row:hover .row__ico {
+    background: var(--blue);
+    color: var(--white);
+  }
+
+  .row__title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-3);
+    font-family: var(--font-display);
+    font-size: var(--fs-h4);
+    font-weight: 700;
+  }
+
+  .row__soon {
+    padding: 2px var(--sp-3);
+    border-radius: var(--r-pill);
+    background: var(--surface);
+    font-family: var(--font-body);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+
+  .row__teaser {
+    display: block;
+    margin-top: 2px;
+    font-size: var(--fs-sm);
+    color: var(--ink-muted);
+  }
+
+  .row__price {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .row__arrow {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--blue-deep);
+    transition: transform var(--dur-hover) var(--ease-out);
+  }
+
+  .row:hover .row__arrow {
+    transform: translate(3px, -3px);
+  }
+
+  @media (max-width: 720px) {
+    .row {
+      grid-template-columns: auto 1fr;
+      gap: var(--sp-4);
+    }
+
+    .row__price {
+      grid-column: 2;
+      font-size: var(--fs-sm);
+    }
+
+    .row__arrow {
+      display: none;
+    }
+  }
+</style>

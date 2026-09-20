@@ -1,0 +1,255 @@
+---
+import { beforeAfter } from '../../data/content';
+import Section from '../ui/Section.astro';
+import SectionHead from '../ui/SectionHead.astro';
+import Icon from '../ui/Icon.astro';
+import Button from '../ui/Button.astro';
+
+/**
+ * Блок 8 из doc 03 — возвращаем главный актив старого сайта.
+ * Шторка с перетаскиванием, а не две картинки рядом: мышь, тач и стрелки.
+ */
+const WIDTHS = [480, 800, 1200, 1600];
+const srcset = (n: string) => WIDTHS.map((w) => `/img/${n}-${w}.webp ${w}w`).join(', ');
+---
+
+<Section labelledby="ba-title">
+  <SectionHead
+    eyebrow="До и после"
+    title="Результат нашей работы"
+    highlight="нашей работы"
+    sub="Потяните за ползунок — увидите одно и то же место до смены и после неё."
+    id="ba-title"
+  >
+    <Button href="/nashi-raboty/" variant="ghost" size="sm">Вся галерея</Button>
+  </SectionHead>
+
+  <ul class="ba" data-reveal>
+    {beforeAfter.map((pair, i) => (
+      <li class="ba__item" data-reveal-item>
+        <div
+          class="ba__frame"
+          data-ba
+          role="group"
+          aria-label={`Сравнение до и после: ${pair.caption}`}
+        >
+          <img
+            class="ba__img ba__img--after"
+            src={`/img/${pair.after}-800.webp`}
+            srcset={srcset(pair.after)}
+            sizes="(max-width: 900px) 100vw, 33vw"
+            width="800"
+            height="600"
+            alt={`После уборки: ${pair.caption}`}
+            loading={i === 0 ? 'eager' : 'lazy'}
+            decoding="async"
+          />
+
+          <div class="ba__clip" data-ba-clip>
+            <img
+              class="ba__img ba__img--before"
+              src={`/img/${pair.before}-800.webp`}
+              srcset={srcset(pair.before)}
+              sizes="(max-width: 900px) 100vw, 33vw"
+              width="800"
+              height="600"
+              alt={`До уборки: ${pair.caption}`}
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+
+          <span class="ba__tag ba__tag--before">До</span>
+          <span class="ba__tag ba__tag--after">После</span>
+
+          <div class="ba__divider" data-ba-divider aria-hidden="true">
+            <span class="ba__handle"><Icon name="drag" size={18} stroke={2.2} /></span>
+          </div>
+
+          <input
+            class="ba__range"
+            type="range"
+            min="0"
+            max="100"
+            value="50"
+            step="0.5"
+            aria-label={`Сдвиньте, чтобы сравнить: ${pair.caption}`}
+            data-ba-range
+          />
+        </div>
+
+        <p class="ba__caption">
+          <b>{pair.caption}</b>
+          <i>{pair.work}</i>
+        </p>
+      </li>
+    ))}
+  </ul>
+</Section>
+
+<style>
+  .ba {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-5);
+  }
+
+  .ba__frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--r-lg);
+    background: var(--surface);
+    aspect-ratio: 4 / 3;
+    touch-action: pan-y;
+    user-select: none;
+    container-type: inline-size;
+  }
+
+  .ba__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Верхний слой обрезается по позиции ползунка */
+  .ba__clip {
+    position: absolute;
+    inset: 0;
+    width: var(--pos, 50%);
+    overflow: hidden;
+  }
+
+  /* Нижний слой не должен сжиматься вместе со шторкой — держим его
+     в ширину всего кадра через контейнерные единицы. */
+  .ba__clip .ba__img {
+    width: 100cqw;
+  }
+
+  .ba__divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--pos, 50%);
+    width: 3px;
+    margin-left: -1.5px;
+    background: var(--white);
+    box-shadow: 0 0 0 1px rgb(5 10 29 / 0.12);
+    pointer-events: none;
+  }
+
+  .ba__handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: var(--white);
+    color: var(--blue-deep);
+    box-shadow: var(--shadow-md);
+    transition: transform var(--dur-hover) var(--ease-out);
+  }
+
+  .ba__frame:hover .ba__handle {
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+
+  /* Настоящий input поверх кадра: даёт клавиатуру и тач бесплатно */
+  .ba__range {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: ew-resize;
+    appearance: none;
+    background: transparent;
+  }
+
+  .ba__range::-webkit-slider-thumb {
+    appearance: none;
+    width: 44px;
+    height: 100%;
+    cursor: ew-resize;
+  }
+
+  .ba__range::-moz-range-thumb {
+    width: 44px;
+    height: 100%;
+    border: 0;
+    background: transparent;
+    cursor: ew-resize;
+  }
+
+  .ba__range:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 2px;
+    border-radius: var(--r-lg);
+  }
+
+  .ba__tag {
+    position: absolute;
+    top: var(--sp-4);
+    padding: var(--sp-1) var(--sp-3);
+    border-radius: var(--r-pill);
+    background: rgb(5 10 29 / 0.62);
+    backdrop-filter: blur(4px);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--white);
+    pointer-events: none;
+  }
+
+  .ba__tag--before {
+    left: var(--sp-4);
+  }
+
+  .ba__tag--after {
+    right: var(--sp-4);
+  }
+
+  .ba__caption {
+    margin-top: var(--sp-4);
+  }
+
+  .ba__caption b {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--fs-h4);
+  }
+
+  .ba__caption i {
+    display: block;
+    margin-top: 2px;
+    font-style: normal;
+    font-size: var(--fs-caption);
+    color: var(--ink-muted);
+  }
+
+  /* На мобильном — горизонтальный ряд со scroll-snap вместо сжатия */
+  @media (max-width: 900px) {
+    .ba {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(280px, 82%);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: thin;
+      padding-bottom: var(--sp-3);
+      margin-inline: calc(var(--gutter) * -1);
+      padding-inline: var(--gutter);
+    }
+
+    .ba__item {
+      scroll-snap-align: start;
+    }
+  }
+</style>
+
+<script>
+  import '../../scripts/beforeafter';
+</script>

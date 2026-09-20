@@ -1,0 +1,153 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import { site } from '../data/site';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import MobileBar from '../components/layout/MobileBar.astro';
+import LeadModal from '../components/forms/LeadModal.astro';
+
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/utilities.css';
+import '../styles/components.css';
+
+interface Props {
+  title: string;
+  description: string;
+  /** JSON-LD блоки страницы */
+  schema?: unknown[];
+  ogImage?: string;
+  noindex?: boolean;
+  /** Первый экран растянут на всю высоту — шапка ложится поверх него */
+  heroOverlay?: boolean;
+}
+
+const {
+  title,
+  description,
+  schema = [],
+  ogImage = '/img/hero-van-1200.webp',
+  noindex = false,
+  heroOverlay = false,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site ?? site.domain).href;
+
+// Organization + LocalBusiness есть на каждой странице (ТЗ §8)
+const org = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  '@id': `${site.domain}/#organization`,
+  name: site.brand,
+  description: 'Клининговая компания в Екатеринбурге: уборка офисов, магазинов, складов и других коммерческих объектов',
+  url: site.domain,
+  telephone: '+73433467953',
+  email: site.email,
+  image: new URL(ogImage, site.domain).href,
+  priceRange: '₽₽',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Екатеринбург',
+    addressRegion: 'Свердловская область',
+    addressCountry: 'RU',
+  },
+  areaServed: { '@type': 'City', name: 'Екатеринбург' },
+  openingHoursSpecification: {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    opens: '09:00',
+    closes: '19:00',
+  },
+};
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.brand} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(ogImage, site.domain).href} />
+    <meta property="og:locale" content="ru_RU" />
+
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="yandex-verification" content={site.yandexVerification} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link
+      rel="preload"
+      href="/fonts/manrope-cyrillic-wght-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/inter-cyrillic-wght-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <script type="application/ld+json" set:html={JSON.stringify(org)} />
+    {schema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
+
+    <ClientRouter />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Перейти к содержанию</a>
+
+    <Header overlay={heroOverlay} />
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <Footer />
+    <MobileBar />
+    <LeadModal />
+
+    <script>
+      import '../scripts/ui';
+      import '../scripts/forms';
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  /* Плавная смена страниц. Уважение к prefers-reduced-motion — в base.css */
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root) {
+    animation: vt-out 180ms var(--ease-out) both;
+  }
+
+  ::view-transition-new(root) {
+    animation: vt-in 280ms var(--ease-out) both;
+  }
+
+  @keyframes vt-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes vt-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+</style>

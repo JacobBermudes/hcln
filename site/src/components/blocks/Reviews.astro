@@ -1,0 +1,235 @@
+---
+import { reviews, rating, clientLogos } from '../../data/content';
+import Section from '../ui/Section.astro';
+import SectionHead from '../ui/SectionHead.astro';
+import Icon from '../ui/Icon.astro';
+import Button from '../ui/Button.astro';
+
+/**
+ * Блок 9 из doc 03. Отзывы лежат прямо в HTML — виджет не индексируется.
+ * Логотипы клиентов идут строкой рядом с рейтингом: отдельной «стены»
+ * из трёх логотипов не делаем, doc 07 прямо предупреждает, что она
+ * читается как «клиентов мало».
+ */
+---
+
+<Section soft id="otzyvy" labelledby="reviews-title">
+  <SectionHead
+    eyebrow="Обратная связь"
+    title="Что говорят заказчики"
+    highlight="говорят заказчики"
+    id="reviews-title"
+  >
+    <Button href="/otzyvy/" variant="ghost" size="sm">Все отзывы</Button>
+  </SectionHead>
+
+  <div class="rv" data-reveal>
+    <aside class="rv__score">
+      <p class="rv__value">{rating.value.toLocaleString('ru-RU')}</p>
+      <p class="rv__stars" aria-label={`Рейтинг ${rating.value} из 5`}>
+        {Array.from({ length: 5 }, (_, i) => (
+          <Icon name="star" size={18} class={i < Math.round(rating.value) ? 'is-on' : ''} />
+        ))}
+      </p>
+      <p class="rv__meta">{rating.count} оценок · {rating.source}</p>
+
+      <div class="rv__logos">
+        <p class="rv__logos-title">Нам доверяют</p>
+        <ul>
+          {clientLogos.map((l) => (
+            <li>
+              <img src={l.file} alt={`Логотип «${l.name}»`} width={l.width} height="32" loading="lazy" />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </aside>
+
+    <ul class="rv__list">
+      {reviews.map((r) => (
+        <li class="rv__card" data-reveal-item>
+          <div class="rv__head">
+            <span class="rv__avatar" aria-hidden="true">{r.name.slice(0, 1)}</span>
+            <span class="rv__who">
+              <b>{r.name}</b>
+              <i>{r.role} · {r.company}</i>
+            </span>
+            <span class="chip rv__date">{r.date}</span>
+          </div>
+          <p class="rv__text">{r.text}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</Section>
+
+<style>
+  .rv {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: var(--sp-5);
+    align-items: start;
+  }
+
+  /* --- Сводный рейтинг --------------------------------------------------- */
+  .rv__score {
+    padding: var(--sp-6);
+    border-radius: var(--r-lg);
+    background: var(--white);
+    position: sticky;
+    top: calc(var(--header-h-scrolled) + var(--sp-4));
+  }
+
+  .rv__value {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: var(--tracking-tight);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .rv__stars {
+    display: flex;
+    gap: 2px;
+    margin-top: var(--sp-3);
+    color: var(--line-strong);
+  }
+
+  .rv__stars :global(.is-on) {
+    color: var(--orange);
+    fill: var(--orange);
+  }
+
+  .rv__meta {
+    margin-top: var(--sp-3);
+    font-size: var(--fs-caption);
+    color: var(--ink-soft);
+  }
+
+  .rv__logos {
+    margin-top: var(--sp-6);
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--line);
+  }
+
+  .rv__logos-title {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .rv__logos ul {
+    display: grid;
+    gap: var(--sp-4);
+    margin-top: var(--sp-4);
+  }
+
+  .rv__logos img {
+    height: 30px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    object-position: left center;
+    opacity: 0.8;
+    transition: opacity var(--dur-hover) var(--ease-out);
+  }
+
+  .rv__logos li:hover img {
+    opacity: 1;
+  }
+
+  /* --- Карточки отзывов --------------------------------------------------- */
+  .rv__list {
+    display: grid;
+    gap: var(--sp-4);
+  }
+
+  .rv__card {
+    padding: var(--sp-6);
+    border-radius: var(--r-lg);
+    background: var(--white);
+    transition: box-shadow var(--dur-hover) var(--ease-out);
+  }
+
+  .rv__card:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .rv__head {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-4);
+  }
+
+  .rv__avatar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--blue-soft);
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: var(--blue-deep);
+  }
+
+  .rv__who {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .rv__who b {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--fs-h4);
+  }
+
+  .rv__who i {
+    display: block;
+    font-style: normal;
+    font-size: var(--fs-caption);
+    color: var(--ink-soft);
+  }
+
+  .rv__date {
+    flex: none;
+  }
+
+  .rv__text {
+    font-size: var(--fs-sm);
+    color: var(--ink-muted);
+  }
+
+  @media (max-width: 860px) {
+    .rv {
+      grid-template-columns: 1fr;
+    }
+
+    .rv__score {
+      position: static;
+    }
+
+    .rv__logos ul {
+      grid-auto-flow: column;
+      justify-content: start;
+      align-items: center;
+      gap: var(--sp-6);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .rv__date {
+      display: none;
+    }
+
+    .rv__logos ul {
+      grid-auto-flow: row;
+      gap: var(--sp-4);
+    }
+  }
+</style>

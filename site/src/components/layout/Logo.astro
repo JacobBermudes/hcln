@@ -1,0 +1,66 @@
+---
+interface Props {
+  invert?: boolean;
+  class?: string;
+}
+const { invert = false, class: cls = '' } = Astro.props;
+---
+
+<a href="/" class:list={['logo', invert && 'logo--invert', cls]} aria-label="CLEAN OFFICE — на главную">
+  <span class="logo__mark" aria-hidden="true">
+    <svg viewBox="0 0 32 32" fill="none">
+      <path d="M4 22 12 8l6 10 3-5 7 9" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </span>
+  <span class="logo__text">
+    <span class="logo__line">CLEAN</span>
+    <span class="logo__line">OFFICE</span>
+  </span>
+</a>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-3);
+    flex: none;
+  }
+
+  .logo__mark {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--blue);
+    color: var(--white);
+    transition: transform var(--dur-hover) var(--ease-out);
+  }
+
+  .logo__mark svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .logo:hover .logo__mark {
+    transform: rotate(-6deg);
+  }
+
+  .logo__text {
+    display: grid;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 0.9375rem;
+    line-height: 1.05;
+    letter-spacing: 0.14em;
+    color: var(--ink);
+  }
+
+  .logo--invert .logo__text {
+    color: var(--white);
+  }
+
+  .logo__line:last-child {
+    color: var(--blue);
+  }
+</style>

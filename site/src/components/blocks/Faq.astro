@@ -1,0 +1,93 @@
+---
+import { faq as homeFaq } from '../../data/content';
+import { site } from '../../data/site';
+import Section from '../ui/Section.astro';
+import SectionHead from '../ui/SectionHead.astro';
+import Icon from '../ui/Icon.astro';
+import Button from '../ui/Button.astro';
+
+/**
+ * Блок 14 из doc 03 — только B2B. Разметка FAQPage живёт на странице,
+ * чтобы не дублировать один и тот же @type дважды.
+ */
+interface Props {
+  items?: readonly { q: string; a: string }[];
+  title?: string;
+  id?: string;
+}
+
+const { items = homeFaq, title = 'Частые вопросы', id = 'faq' } = Astro.props;
+---
+
+<Section id={id} labelledby={`${id}-title`}>
+  <div class="faq">
+    <div class="faq__aside">
+      <SectionHead eyebrow="Вопрос — ответ" title={title} id={`${id}-title`} />
+
+      <div class="faq__help" data-reveal>
+        <p>Не нашли свой вопрос? Ответим по телефону или в мессенджере.</p>
+        <Button href={site.phoneHref} variant="ghost" icon="phone" size="sm">{site.phone}</Button>
+      </div>
+    </div>
+
+    <div class="acc faq__list" data-reveal>
+      {items.map((item, i) => (
+        <div class="acc__item" data-reveal-item>
+          <h3>
+            <button
+              type="button"
+              class="acc__btn"
+              aria-expanded="false"
+              aria-controls={`${id}-panel-${i}`}
+              id={`${id}-btn-${i}`}
+              data-acc-btn
+            >
+              <span>{item.q}</span>
+              <span class="acc__sign" aria-hidden="true"><Icon name="plus" size={16} stroke={2.2} /></span>
+            </button>
+          </h3>
+          <div class="acc__panel" id={`${id}-panel-${i}`} role="region" aria-labelledby={`${id}-btn-${i}`}>
+            <div>
+              <p class="acc__body">{item.a}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</Section>
+
+<style>
+  .faq {
+    display: grid;
+    grid-template-columns: 0.7fr 1fr;
+    gap: clamp(1.5rem, 0.8rem + 3vw, 4rem);
+    align-items: start;
+  }
+
+  .faq__aside {
+    position: sticky;
+    top: calc(var(--header-h-scrolled) + var(--sp-5));
+  }
+
+  .faq__help {
+    display: grid;
+    gap: var(--sp-4);
+    justify-items: start;
+    padding: var(--sp-5);
+    border-radius: var(--r-md);
+    background: var(--blue-soft);
+    font-size: var(--fs-sm);
+    color: var(--ink-muted);
+  }
+
+  @media (max-width: 900px) {
+    .faq {
+      grid-template-columns: 1fr;
+    }
+
+    .faq__aside {
+      position: static;
+    }
+  }
+</style>

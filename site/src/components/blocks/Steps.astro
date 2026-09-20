@@ -1,0 +1,170 @@
+---
+import { steps } from '../../data/content';
+import Section from '../ui/Section.astro';
+import SectionHead from '../ui/SectionHead.astro';
+import Picture from '../ui/Picture.astro';
+import Button from '../ui/Button.astro';
+
+/**
+ * Блок 5 из doc 03. Шесть шагов вместо пяти: последний добавлен, потому что
+ * для бухгалтерии заказчика он важнее первых пяти.
+ * Приём макета: коллаж из смещённых фотографий слева, список справа.
+ */
+---
+
+<Section labelledby="steps-title">
+  <div class="steps">
+    <div class="steps__media" data-reveal>
+      <Picture
+        name="steps-1"
+        alt="Специалист принимает объект перед началом работ"
+        ratio="portrait"
+        sizes="(max-width: 900px) 50vw, 22vw"
+        class="steps__ph steps__ph--1"
+      />
+      <Picture
+        name="steps-2"
+        alt="Бригада убирает офисное помещение"
+        ratio="1-1"
+        sizes="(max-width: 900px) 50vw, 20vw"
+        class="steps__ph steps__ph--2"
+      />
+      <Picture
+        name="steps-3"
+        alt="Профессиональный инвентарь и химия"
+        ratio="1-1"
+        sizes="(max-width: 900px) 40vw, 16vw"
+        class="steps__ph steps__ph--3"
+      />
+    </div>
+
+    <div class="steps__text">
+      <SectionHead
+        eyebrow="Процесс и сроки"
+        title="Как мы начинаем работу: 6 шагов и сроки"
+        highlight="6 шагов и сроки"
+        id="steps-title"
+      />
+
+      <ol class="steps__list" data-reveal>
+        {steps.map((s) => (
+          <li class="step" data-reveal-item>
+            <span class="step__n">{s.n}</span>
+            <span class="step__body">
+              <b>{s.title}</b>
+              <i>{s.text}</i>
+            </span>
+          </li>
+        ))}
+      </ol>
+
+      <Button variant="primary" data-modal-open="lead" class="steps__cta">Вызвать специалиста на объект</Button>
+    </div>
+  </div>
+</Section>
+
+<style>
+  .steps {
+    display: grid;
+    grid-template-columns: 0.85fr 1fr;
+    gap: clamp(2rem, 1rem + 4vw, 4.5rem);
+    align-items: center;
+  }
+
+  /* Коллаж из смещённых скруглённых фотографий */
+  .steps__media {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-4);
+    align-items: start;
+  }
+
+  .steps__ph--1 {
+    grid-row: span 2;
+    border-radius: var(--r-lg);
+  }
+
+  .steps__ph--2 {
+    border-radius: var(--r-lg);
+    margin-top: var(--sp-8);
+  }
+
+  .steps__ph--3 {
+    border-radius: var(--r-lg);
+  }
+
+  .steps__list {
+    display: grid;
+    gap: var(--sp-2);
+    margin-top: calc(var(--sp-7) * -1 + var(--sp-2));
+  }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-4);
+    padding: var(--sp-4);
+    border-radius: var(--r-md);
+    transition: background-color var(--dur-hover) var(--ease-out);
+  }
+
+  .step:hover {
+    background: var(--surface);
+  }
+
+  .step__n {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--blue-soft);
+    font-family: var(--font-display);
+    font-size: var(--fs-caption);
+    font-weight: 800;
+    color: var(--blue-deep);
+    font-variant-numeric: tabular-nums;
+    transition:
+      background-color var(--dur-hover) var(--ease-out),
+      color var(--dur-hover) var(--ease-out);
+  }
+
+  .step:hover .step__n {
+    background: var(--blue);
+    color: var(--white);
+  }
+
+  .step__body b {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--fs-h4);
+  }
+
+  .step__body i {
+    display: block;
+    margin-top: 2px;
+    font-style: normal;
+    font-size: var(--fs-sm);
+    color: var(--ink-muted);
+  }
+
+  .steps__cta {
+    margin-top: var(--sp-6);
+  }
+
+  @media (max-width: 900px) {
+    .steps {
+      grid-template-columns: 1fr;
+    }
+
+    .steps__media {
+      order: 2;
+    }
+
+    .steps__list {
+      margin-top: 0;
+    }
+  }
+</style>

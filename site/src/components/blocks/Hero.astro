@@ -1,0 +1,310 @@
+---
+import { heroBullets, heroBadges, PLACEHOLDERS } from '../../data/site';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+
+/**
+ * Первый экран во всю ширину и высоту окна.
+ *
+ * Снимок брендированного автомобиля лежит подложкой от края до края,
+ * машина прижата к левому краю, текст стоит в правой половине. Фон
+ * секции совпадает с фоном снимка (--brand-deep), поэтому там, где
+ * кадр заканчивается, стыка не видно.
+ *
+ * Отрицательный отступ сверху затягивает секцию под липкую шапку —
+ * на главной шапка идёт в прозрачном режиме и лежит поверх снимка.
+ */
+const WIDTHS = [800, 1200, 1600, 2000];
+const srcset = (n: string, ws: number[]) => ws.map((w) => `/img/${n}-${w}.webp ${w}w`).join(', ');
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__media">
+    <picture>
+      <source
+        media="(max-width: 900px)"
+        srcset={srcset('hero-van-tall', [800, 1200])}
+        sizes="100vw"
+      />
+      <img
+        src="/img/hero-van-1600.webp"
+        srcset={srcset('hero-van', WIDTHS)}
+        sizes="100vw"
+        width="1600"
+        height="900"
+        alt="Брендированный автомобиль клининговой службы CLEAN OFFICE"
+        fetchpriority="high"
+        decoding="sync"
+      />
+    </picture>
+  </div>
+
+  <div class="container hero__inner">
+    <div class="hero__text">
+      <p class="eyebrow hero__eyebrow">Коммерческий клининг · Екатеринбург</p>
+
+      <h1 id="hero-title" class="hero__title word-rise">
+        Профессиональная уборка <span class="hl">коммерческих помещений</span> в Екатеринбурге
+      </h1>
+
+      <p class="hero__lead">
+        Офисы, магазины, склады, рестораны, жилые комплексы. Постоянная бригада на объекте,
+        договор за {PLACEHOLDERS.contractDays} дня, фиксированная ставка на весь срок.
+      </p>
+
+      <ul class="hero__bullets" data-reveal>
+        {heroBullets.map((b) => (
+          <li>
+            <Icon name="checkCircle" size={22} />
+            <span>{b}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div class="hero__actions" data-reveal>
+        <Button href="/#kalkulyator" variant="primary">Рассчитать стоимость</Button>
+        <Button variant="white" data-modal-open="lead">Получить КП за 1 час</Button>
+      </div>
+
+      <ul class="hero__badges">
+        {heroBadges.map((badge) => (
+          <li>
+            <span class="hero__badge-ico"><Icon name={badge.icon} size={18} /></span>
+            <b>{badge.title}</b>
+            <i>{badge.text}</i>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+
+  <a class="hero__scroll" href="#trust" aria-label="К содержанию страницы">
+    <Icon name="chevronDown" size={18} />
+  </a>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: grid;
+    align-items: center;
+    /* Затягиваем под липкую шапку, чтобы снимок начинался от самого верха */
+    margin-top: calc(var(--header-h) * -1);
+    min-height: 100svh;
+    overflow: hidden;
+    background: var(--brand-deep);
+    color: var(--white);
+  }
+
+  .hero__media {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: left center;
+  }
+
+  /* Мягкая подложка под текстом: страхует читаемость на промежуточных
+     ширинах, где машина заходит правее обычного. */
+  .hero__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 26%,
+      color-mix(in srgb, var(--brand-deep) 70%, transparent) 42%,
+      var(--brand-deep) 56%
+    );
+  }
+
+  .hero__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 0.78fr) minmax(0, 1fr);
+    /* Компенсируем затяжку под шапку, чтобы текст не лез ей под ноги.
+       Нижний отступ оставляет место кружку-подсказке, он лежит абсолютом
+       и в высоту содержимого не входит. */
+    padding-block: calc(var(--header-h) + var(--sp-4)) var(--sp-8);
+  }
+
+  .hero__text {
+    grid-column: 2;
+  }
+
+  .hero__eyebrow {
+    color: var(--white);
+  }
+
+  .hero__title {
+    margin-top: var(--sp-4);
+    color: var(--white);
+  }
+
+  /* Рабочий синий на тёмном фоне даёт контраст 1.9:1 и не читается —
+     на первом экране подсвечиваем светлым оттенком (5.4:1) */
+  .hero__title :global(.hl) {
+    color: var(--blue-light);
+  }
+
+  .hero__lead {
+    max-width: 44ch;
+    margin-top: var(--sp-4);
+    font-size: var(--fs-lead);
+    color: rgb(255 255 255 / 0.78);
+  }
+
+  .hero__bullets {
+    display: grid;
+    gap: var(--sp-3);
+    margin-top: var(--sp-5);
+  }
+
+  .hero__bullets li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    color: rgb(255 255 255 / 0.9);
+  }
+
+  .hero__bullets svg {
+    flex: none;
+    margin-top: 1px;
+    color: var(--orange);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+    margin-top: var(--sp-6);
+  }
+
+  .hero__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-6);
+    margin-top: var(--sp-5);
+    padding-top: var(--sp-4);
+    border-top: 1px solid rgb(255 255 255 / 0.16);
+  }
+
+  .hero__badges li {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+  }
+
+  .hero__badge-ico {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.12);
+    color: var(--white);
+  }
+
+  .hero__badges b {
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+  }
+
+  .hero__badges i {
+    font-style: normal;
+    font-size: 0.8125rem;
+    color: rgb(255 255 255 / 0.66);
+  }
+
+  /* Подсказка, что страница продолжается ниже сгиба */
+  .hero__scroll {
+    position: absolute;
+    left: 50%;
+    bottom: var(--sp-5);
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    margin-left: -21px;
+    border: 1px solid rgb(255 255 255 / 0.28);
+    border-radius: 50%;
+    color: var(--white);
+    animation: hero-nudge 2.4s var(--ease-out) infinite;
+    transition:
+      background-color var(--dur-hover) var(--ease-out),
+      border-color var(--dur-hover) var(--ease-out);
+  }
+
+  .hero__scroll:hover {
+    background: rgb(255 255 255 / 0.16);
+    border-color: transparent;
+  }
+
+  @keyframes hero-nudge {
+    0%,
+    72%,
+    100% {
+      transform: translateY(0);
+    }
+    84% {
+      transform: translateY(5px);
+    }
+  }
+
+  /* --- Адаптив ----------------------------------------------------------
+     На узком экране машина уезжает наверх отдельным кадром, текст — под ней. */
+  @media (max-width: 900px) {
+    .hero {
+      display: block;
+      min-height: 0;
+    }
+
+    .hero__media {
+      position: static;
+      aspect-ratio: 4 / 3;
+    }
+
+    .hero__media img {
+      object-position: center;
+    }
+
+    /* Кадр стоит отдельным блоком — подложка под текст не нужна */
+    .hero__media::after {
+      display: none;
+    }
+
+    .hero__inner {
+      display: block;
+      padding-block: var(--sp-6) var(--sp-8);
+    }
+
+    .hero__scroll {
+      display: none;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .hero__badges {
+      gap: var(--sp-4);
+    }
+
+    .hero__badges li {
+      flex: 1 1 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__scroll {
+      animation: none;
+    }
+  }
+</style>
